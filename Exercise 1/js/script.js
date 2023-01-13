@@ -8,6 +8,9 @@ Stephen Friedrich
 let currentTurn = -1; //This is going to track whose turn it and should contain only null, 1, or -1 as a value. 
 let grid = ["","","","","","","","",""]; // This is our board, with entry 0 being the top left hand corner, entry 1 top middle, and so on from left to right, top to bottom. It is currently full of null values.
 let stalemateCheck = 0;
+let playerOhScore = 0;
+let playerXScore = 0;
+let isEndScreen = false;
 
 
 /**
@@ -254,6 +257,7 @@ function checkWinCondition(){ // Hope you like if statements! :D
         stroke(255,255,255);
         textSize(24);
         text("Strange game. The only winning move is not to play.", 750,750);
+        isEndScreen = true;
     }
 }
 
@@ -265,6 +269,8 @@ function xWins(){
     stroke(255,255,255);
     textSize(32);
     text("Player X wins!", 750,750);
+    isEndScreen = true;
+    playerXScore++;
 }
 
 function ohWins(){
@@ -275,6 +281,8 @@ function ohWins(){
     stroke(255,255,255);
     textSize(32);
     text("Player O wins!", 750,750);
+    isEndScreen = true;
+    playerOhScore++;
 }
 
 function checkStalemate(){
@@ -289,4 +297,26 @@ function checkStalemate(){
 
         }
     }
+}
+
+function keyReleased(){
+    if(keyCode == 32 && isEndScreen == true){
+        resetButton();
+        isEndScreen = false;
+    }
+}
+
+function resetButton(){
+    rectMode(CORNER);
+    background(0,0,0);
+    fill(255,255,255);
+    noStroke();
+    rect(595,300,10,900);
+    rect(895,300,10,900);
+    rect(300,595,900,10);
+    rect(300,895,900,10);
+    for(let i = 0; i < 9; i++){
+        grid[i] = "";
+    }
+    stalemateCheck = 0;
 }
