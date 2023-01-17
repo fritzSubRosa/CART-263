@@ -36,27 +36,27 @@ function setup() {
 
 function mousePressed(){
     if(mouseX > 300 && mouseX < 600 && mouseY > 300 && mouseY <600){ // top left corner, array 0
-        if(occupiedCheck(0) == false){ // check if the square is occupied
+        if(occupiedCheck(0) == false && isEndScreen==false){ // check if the square is occupied and the game is ongoing.
             if(currentTurn == 1){ // Check whose turn it is. 1 is O, -1 is X
                 fill (255,255,255);
                 circle (450,450,200); 
                 fill (0,0,0);
                 circle (450,450,175); // rather than bother with drawing an O I am technically drawing two circles. Is this correct? No. Will it technically work? Let's see.
+                grid[0] = currentTurn; // // This indicates that this space is occupied by an Oh, which I will check later, see below.
                 currentTurn = currentTurn*-1; // I use this command to switch whose turn it currently is. The convention, as above is 1 = Oh, -1 = X
-                grid[0] = 1; // // This indicates that this space is occupied by an Oh, which I will check later, see below.
                 checkWinCondition(); // Check if anyone wins the game.
             } else if (currentTurn == -1){
                 stroke(255,255,255);
                 strokeWeight(10);
                 line(350,350,550,550); // Draw X, along with line 50
                 line(550,350,350,550);
+                grid[0] = currentTurn;
                 currentTurn = currentTurn*-1; // Alternate turn, see above
-                grid[0] = -1;
                 checkWinCondition();
             }
         }
     } else if (mouseX > 600 && mouseX < 900 && mouseY > 300 && mouseY <600){ // top middle, array 1. For line-by line, see lines 37-54. These sections are functionally identical.
-        if(occupiedCheck(1)==false){
+        if(occupiedCheck(1)==false && isEndScreen==false){
             if(currentTurn == 1){
                 fill(255,255,255);
                 circle(750,450,200);
@@ -76,7 +76,7 @@ function mousePressed(){
             }
         }
     } else if (mouseX > 900 && mouseX < 1200 && mouseY > 300 && mouseY <600){ // top right, array 2. For line-by line, see lines 37-54. These sections are functionally identical.
-        if(occupiedCheck(2)==false){
+        if(occupiedCheck(2)==false && isEndScreen==false){
             if(currentTurn == 1){
                 fill(255,255,255);
                 circle(1050,450,200);
@@ -96,7 +96,7 @@ function mousePressed(){
             }
         }
     } else if (mouseX > 300 && mouseX < 600 && mouseY > 600 && mouseY < 900){ // middle left, array 3. For line-by line, see lines 37-54. These sections are functionally identical.
-        if(occupiedCheck(3)==false){
+        if(occupiedCheck(3)==false && isEndScreen==false) {
             if(currentTurn == 1){
                 fill(255,255,255);
                 circle(450,750,200);
@@ -116,98 +116,107 @@ function mousePressed(){
             }
         }
     } else if (mouseX >600 && mouseX < 900 && mouseY >600 && mouseY <900){ // middle middle, array 4. For line-by line, see lines 37-54. These sections are functionally identical.
-        if(currentTurn == 1){
-            fill(255,255,255);
-            circle(750,750,200);
-            fill(0,0,0);
-            circle(750,750,175); // see comment line 43
-            currentTurn = currentTurn *-1;
-            grid[4] = 1;
-            checkWinCondition();
-        } else if (currentTurn == -1){
-            stroke(255,255,255);
-            strokeWeight(10);
-            line(650,650,850,850);
-            line(650,850,850,650);
-            currentTurn = currentTurn*-1;
-            grid[4] = -1;
-            checkWinCondition();
+        if (occupiedCheck(4)==false && isEndScreen==false){
+            if(currentTurn == 1){
+                fill(255,255,255);
+                circle(750,750,200);
+                fill(0,0,0);
+                circle(750,750,175); // see comment line 43
+                currentTurn = currentTurn *-1;
+                grid[4] = 1;
+                checkWinCondition();
+            } else if (currentTurn == -1){
+                stroke(255,255,255);
+                strokeWeight(10);
+                line(650,650,850,850);
+                line(650,850,850,650);
+                currentTurn = currentTurn*-1;
+                grid[4] = -1;
+                checkWinCondition();
+            }
         }
     } else if (mouseX >900 && mouseX < 1200 && mouseY >600 && mouseY <900){ // middle right, array 5. For line-by line, see lines 37-54. These sections are functionally identical.
-        if(currentTurn == 1){
-            fill(255,255,255);
-            circle(1050,750,200);
-            fill(0,0,0);
-            circle(1050,750,175); // see comment line 43
-            currentTurn = currentTurn *-1;
-            grid[5] = 1;
-            checkWinCondition();
-        } else if (currentTurn == -1){
-            stroke(255,255,255);
-            strokeWeight(10);
-            line(950,650,1150,850);
-            line(950,850,1150,650);
-            currentTurn = currentTurn*-1;
-            grid[5] = -1;
-            checkWinCondition();
+        if (occupiedCheck(5)== false && isEndScreen==false) {
+            if(currentTurn == 1){
+                fill(255,255,255);
+                circle(1050,750,200);
+                fill(0,0,0);
+                circle(1050,750,175); // see comment line 43
+                currentTurn = currentTurn *-1;
+                grid[5] = 1;
+                checkWinCondition();
+            } else if (currentTurn == -1){
+                stroke(255,255,255);
+                strokeWeight(10);
+                line(950,650,1150,850);
+                line(950,850,1150,650);
+                currentTurn = currentTurn*-1;
+                grid[5] = -1;
+                checkWinCondition();
+            }
         }
     } else if (mouseX > 300 && mouseX < 600 && mouseY > 900 && mouseY < 1200){ //bottom left, array 6. For line-by line, see lines 37-54. These sections are functionally identical.
-        if(currentTurn == 1){
-            fill(255,255,255);
-            circle(450,1050,200);
-            fill(0,0,0);
-            circle(450,1050,175); // see comment line 43
-            currentTurn = currentTurn *-1;
-            grid[6] = 1;
-            checkWinCondition();
-        } else if (currentTurn == -1){
-            stroke(255,255,255);
-            strokeWeight(10);
-            line(350,950,550,1150);
-            line(350,1150,550,950);
-            currentTurn = currentTurn*-1;
-            grid[6] = -1;
-            checkWinCondition();
+        if (occupiedCheck(6) == false && isEndScreen==false){
+            if(currentTurn == 1){
+                fill(255,255,255);
+                circle(450,1050,200);
+                fill(0,0,0);
+                circle(450,1050,175); // see comment line 43
+                currentTurn = currentTurn *-1;
+                grid[6] = 1;
+                checkWinCondition();
+            } else if (currentTurn == -1){
+                stroke(255,255,255);
+                strokeWeight(10);
+                line(350,950,550,1150);
+                line(350,1150,550,950);
+                currentTurn = currentTurn*-1;
+                grid[6] = -1;
+                checkWinCondition();
+            }
         }
     } else if (mouseX > 600 && mouseX < 900 && mouseY > 900 && mouseY < 1200){ // bottom middle, array 7. For line-by line, see lines 37-54. These sections are functionally identical.
-        if(currentTurn == 1){
-            fill(255,255,255);
-            circle(750,1050,200);
-            fill(0,0,0);
-            circle(750,1050,175); // see comment line 43
-            currentTurn = currentTurn *-1;
-            grid[7] = 1;
-            checkWinCondition();
-        } else if (currentTurn == -1){
-            stroke(255,255,255);
-            strokeWeight(10);
-            line(650,950,850,1150);
-            line(650,1150,850,950);
-            currentTurn = currentTurn*-1;
-            grid[7] = -1;
-            checkWinCondition();
+        if (occupiedCheck(7)==false && isEndScreen==false){
+            if(currentTurn == 1){
+                fill(255,255,255);
+                circle(750,1050,200);
+                fill(0,0,0);
+                circle(750,1050,175); // see comment line 43
+                currentTurn = currentTurn *-1;
+                grid[7] = 1;
+                checkWinCondition();
+            } else if (currentTurn == -1){
+                stroke(255,255,255);
+                strokeWeight(10);
+                line(650,950,850,1150);
+                line(650,1150,850,950);
+                currentTurn = currentTurn*-1;
+                grid[7] = -1;
+                checkWinCondition();
+            }
         }
     } else if (mouseX > 900 && mouseX < 1200 && mouseY > 900 && mouseY < 1200){ // bottom right, array 8. For line-by line, see lines 37-54. These sections are functionally identical.
-        if(currentTurn == 1){
-            fill(255,255,255);
-            circle(1050,1050,200);
-            fill(0,0,0);
-            circle(1050,1050,175); // see comment line 43
-            currentTurn = currentTurn *-1;
-            grid[8] = 1;
-            checkWinCondition();
-        } else if (currentTurn == -1){
-            stroke(255,255,255);
-            strokeWeight(10);
-            line(950,950,1150,1150);
-            line(950,1150,1150,950);
-            currentTurn = currentTurn*-1;
-            grid[8] = -1;
-            checkWinCondition();
+        if (occupiedCheck(8)==false && isEndScreen==false){
+            if(currentTurn == 1){
+                fill(255,255,255);
+                circle(1050,1050,200);
+                fill(0,0,0);
+                circle(1050,1050,175); // see comment line 43
+                currentTurn = currentTurn *-1;
+                grid[8] = 1;
+                checkWinCondition();
+            } else if (currentTurn == -1){
+                stroke(255,255,255);
+                strokeWeight(10);
+                line(950,950,1150,1150);
+                line(950,1150,1150,950);
+                currentTurn = currentTurn*-1;
+                grid[8] = -1;
+                checkWinCondition();
+            }
         }
     }
 }
-
 function occupiedCheck(targetSquare){
     if (grid[targetSquare] == 1 || grid[targetSquare] == -1){
         return true;
@@ -245,7 +254,7 @@ function checkWinCondition(){ // Hope you like if statements! :D
         ohWins();
     } else if (grid[0]+grid[4]+grid[8]==-3){
         xWins();
-    } else if (grid[2]+grid[4]+grid[6] == 3){
+    } else if (grid[2]+grid[4]+grid[6] == 3){ // Up diagonal
         ohWins();
     } else if (grid[2]+grid[4]+grid[6]==-3){
         xWins();
