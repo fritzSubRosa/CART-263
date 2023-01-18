@@ -1,9 +1,5 @@
-# Hello World!
+# Project 1 - Particles With Personality
 
-This is my readme file.
+This is my project for the CART 263 Assignment "Particles with Personality." My assigned prompt phrase was "Extremely Depressed." My piece, titled _Can't Do Anything Right_ will use particles to convey a feeling of hopelessness and isolation through color and implication. 
 
-- This is a bullet point. 
-
-*This is italics.*
-
-**This is bold.**
+_Can't Do Anything Right_ will consist of two key visual elements: warm-colored particles which will move about and change to other warm colors when they collide with one another, and a single blue particle which will follow the mouse cursor. The warm-colored particles will mill about energetically everywhere except a small zone which will initially contain the blue particle. If the blue particle is moved out of the zone and into contact with the warm-colored particles, the warm-colored particles will themselves begin to turn blue, then purple, then black. The only way for the warm-colored particles to remain such will be for the blue particle to remain isolated. No matter how the blue particle tries, it cannot seem to grow warm, only making those around it colder.
