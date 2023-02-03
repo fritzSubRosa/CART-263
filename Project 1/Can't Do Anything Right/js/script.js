@@ -1,13 +1,11 @@
 /**
-Title of Project
-Author Name
-
-This is a template. You must fill in the title,
-author, and this description to match your project!
+Can't Do Anything Right
+Stephen Friedrich
 */
 
 let triangles = [];
 let sadZone;
+let sadTriangle;
 
 function setup() {
     colorMode(HSB);
@@ -16,6 +14,7 @@ function setup() {
         triangles[i] = new HappyParticle();
     }
     sadZone = new Zone();
+    sadTriangle = new SadParticle();
 }
 
 function draw() {
@@ -24,7 +23,8 @@ function draw() {
     for (let i = 0; i<triangles.length; i++){
         triangles[i].display();
     }
-
+    sadTriangle.display();
+    sadTriangle.move();
 }
 
 
@@ -72,3 +72,20 @@ class HappyParticle {
     }
 }
 
+class SadParticle {
+    constructor (){
+        this.x = width/2;
+        this.y = height/2;
+        this.hue = 240;
+    }
+    display(){
+        stroke(0);
+        fill(this.hue,100,100);
+        triangle(this.x,this.y,this.x+5,this.y+10,this.x+10,this.y);
+    }
+    move(){
+        this.x = mouseX;
+        this.y = mouseY;
+    }
+
+}
