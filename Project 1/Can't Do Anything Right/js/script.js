@@ -48,7 +48,7 @@ class HappyParticle { // The vast majority of particles are "happy" and filled i
     constructor (i) { 
         this.x = random(50,950);
         this.y = random(50,950);
-        this.triangleSize = 20;
+        this.triangleSize = 30;
         this.centerX = this.x+(this.triangleSize/2);
         this.centerY = this.y+(this.triangleSize/2);
         this.hue = round(random(1,80)); // Color will be 
@@ -201,7 +201,7 @@ class SadParticle {
         this.hue = 240;
         this.centerX = this.x+5;
         this.centerY = this.y+5;
-        this.triangleSize = 20;
+        this.triangleSize = 30;
     }
     display(){
         stroke(0);
