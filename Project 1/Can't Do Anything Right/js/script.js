@@ -21,18 +21,17 @@ function draw() {
     background(0,0,15);
     sadZone.display();
     for (let i = 0; i<triangles.length; i++){
-        triangles[i].display();
-        triangles[i].collisionCheck();
-        triangles[i].move();
-        triangles[i].connectionCheck();
-        triangles[i].depressionCheck();
+        triangles[i].display(); // Creates triangles and refreshes movement
+        triangles[i].collisionCheck(); // Checks if happy triangles and sad triangles are too close to one another
+        triangles[i].move(); // Keeps happy triangles on screen and moves them around while they're still happy
+        triangles[i].connectionCheck(); // Checks if happy triangles are near enough to one another to draw a connection
+        triangles[i].depressionCheck(); // Checks if a happy triangle has become depressed (unable to draw connections)
     }
-    sadTriangle.display();
-    sadTriangle.move();
+    sadTriangle.display(); // Create sad triangle
+    sadTriangle.move(); // Sad triangle follows cursor
 }
 
-
-class Zone {
+class Zone { // Happy triangles will avoid this zone in the center of the screen
     constructor(){
         this.x = width/2;
         this.y = height/2;
@@ -45,20 +44,21 @@ class Zone {
     }
 }
 
-class HappyParticle {
+class HappyParticle { // The vast majority of particles are "happy" and filled in with warm tones. TriangleSize can be adjusted to make all triangles bigger and still proportional.
     constructor (i) { 
         this.x = random(50,950);
         this.y = random(50,950);
         this.triangleSize = 20;
         this.centerX = this.x+(this.triangleSize/2);
         this.centerY = this.y+(this.triangleSize/2);
-        this.hue = round(random(1,80));
+        this.hue = round(random(1,80)); // Color will be 
         this.speed = 1;
         this.runAwayThresh = 50;
         this.connectionThresh = 75;
         this.id = i;
-        this.isConnected = false;
         this.isDepressed = false;
+        this.saturation = 100;
+        this.brightness = 100;
     }
     display(){
         if(dist(this.centerX, this.centerY, sadZone.x,sadZone.y) <= sadZone.diameter/2){
@@ -80,7 +80,7 @@ class HappyParticle {
             }
         }
         stroke(0);
-        fill(this.hue,100,100);
+        fill(this.hue,this.saturation,this.brightness);
         triangle(this.x,this.y,this.x+this.triangleSize,this.y,this.x+(this.triangleSize/2),this.y+this.triangleSize);
     }
     collisionCheck(){
@@ -98,12 +98,10 @@ class HappyParticle {
     }
     connectionCheck(){
         for(let i=0;i<triangles.length;i++){
-            this.isConnected = false;
             if ((dist(this.centerX,this.centerY,triangles[i].centerX,triangles[i].centerY) < this.connectionThresh) && (this.isDepressed == false) && triangles[i].isDepressed == false){
                 print("connection!");
                 stroke(0,0,100);
                 line(this.centerX,this.centerY,triangles[i].centerX,triangles[i].centerY);
-                this.isConnected = true;
             }   
         }
     }
@@ -179,14 +177,19 @@ class HappyParticle {
         }
     }
     getSad(){
-        if (this.hue < 240){
+        if (this.hue < 240){ // Make triangle bluer
             this.hue++;
+        }
+        if (this.saturation > 50){ // Desaturate triangle
+            this.saturation--;
+        }
+        if (this.brightness > 50){ // Make triangle darker
+            this.brightness--;
         }
     }
     depressionCheck(){
-        if (this.hue > 220){
+        if (this.hue > 220){ // 220 instead of 240 to give wiggle room and make the transition to depressed happen a little faster. 
             this.isDepressed = true;
-            print ("Triangle " +this.id+"'s depression status is: "+this.isDepressed);
         }
     }
 }
@@ -202,7 +205,7 @@ class SadParticle {
     }
     display(){
         stroke(0);
-        fill(this.hue,100,100);
+        fill(this.hue,50,40);
         triangle(this.x,this.y,(this.x+this.triangleSize/2),this.y+this.triangleSize,this.x+this.triangleSize,this.y);
     }
     move(){
