@@ -15,6 +15,7 @@ function setup() {
     }
     sadZone = new Zone();
     sadTriangle = new SadParticle();
+    increment = 0;
 }
 
 function draw() {
@@ -201,18 +202,20 @@ class SadParticle {
         this.hue = 240;
         this.centerX = this.x+5;
         this.centerY = this.y+5;
-        this.triangleSize = 30;
+        this.triangleSize = 30; // Relic of when this was a triangle
     }
     display(){
         stroke(0);
         fill(this.hue,50,40);
-        triangle(this.x,this.y,(this.x+this.triangleSize/2),this.y+this.triangleSize,this.x+this.triangleSize,this.y);
+        ellipse(this.centerX,this.centerY,this.triangleSize,this.triangleSize);
+
     }
     move(){
-        this.x = mouseX;
-        this.y = mouseY;
+        this.x = width*noise(increment); // The sadParticle will move 
+        this.y = height*noise(increment+5);
         this.centerX = this.x+5;
         this.centerY = this.y+5;
+        increment = increment+0.0007;
     }
 
 }
