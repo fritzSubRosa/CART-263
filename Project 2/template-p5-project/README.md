@@ -1,3 +1,3 @@
-# Template p5 project
+# Real Moise Kean Appreciation Hours - An Exploration of the 2020-2021 Premier League Season
 
-This is the README file for the entire project. For more official projects you should write information here about the nature of the project, your name, any special explanations of how the project works, etc.
+This project takes data on every player who played at least one match in the English Premier League and creates objects representing each player and their statistics. The players are divided up by teams and arranged in order, then eliminated if they played more than a single match. From the remaining players, this program identifies players who did something remarkable in their only match - i.e. a Red Card or a goal. The program then presents those players, with their names and team. The entire program could perform the above tasks with any data set for any league, provided it was formatted correctly and team colors could be updated. 

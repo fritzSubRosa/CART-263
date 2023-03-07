@@ -1,5 +1,5 @@
 /**
-There's Only One 
+There's Only One Moise Kean
 Stephen
 */
 
@@ -42,7 +42,7 @@ function draw() {
 }
 
 class PremPlayer {
-    constructor(team,number,name,position,appearances,subs,goals,pens,yellows,reds,code,playercode){
+    constructor(team,number,name,position,appearances,subs,goals,pens,yellows,reds,code,playercode){ // A lot of these attributes weren't ultimately used, but you could easily tweak this to look for anything at all!
         this.team = team;
         this.number = number;
         this.name = name;
@@ -70,21 +70,19 @@ class PremPlayer {
         this.strokeWeight = 3;
         this.numberSize = 10;
         this.newOrder = 0;
+        this.xIncrement = this.code*this.displacement;
+        this.yIncrement = height-this.order*this.upDisplacement;
 
+        // The below block determines the colors of the center, ring, stripe (if applicable) and text of each player
         if (this.team == "Arsenal"){
             this.primaryColor = color(245,0,0);
             this.secondaryColor = color(255);
             this.textColor = color(255);
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }
         else if (this.team == "Aston Villa"){
             this.primaryColor = color(133,1,28);
             this.secondaryColor = color (164,201,249);
             this.textColor = color(255);
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
-            
         } 
         else if (this.team == "Brentford"){
             this.primaryColor = color(249,0,0);
@@ -92,78 +90,56 @@ class PremPlayer {
             this.tertiaryColor = color(0);
             this.textColor = color (0);
             this.striped = true;
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         } 
         else if (this.team == "Brighton and Hove Albion"){
             this.primaryColor = color(0,0,255);
             this.secondaryColor = color(255);
             this.tertiaryColor = color(240,185,4);
             this.striped = true;
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }
         else if (this.team == "Burnley"){
             this.primaryColor = color(129,192,255);
             this.secondaryColor = color(129,1,26);
             this.textColor = color (255);
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }
         else if (this.team == "Chelsea"){
             this.primaryColor = color (0,0,255);
             this.secondaryColor = color (255);
             this.textColor = color(255);
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }
         else if (this.team == "Crystal Palace"){
             this.primaryColor = color(212,24,29);
             this.secondaryColor = color(27, 77, 173);
             this.textColor = color(255);
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }
         else if (this.team == "Everton"){
             this.primaryColor = color(13, 48, 122);
             this.secondaryColor = color(22, 85, 164);
             this.textColor = color(255);
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }
         else if (this.team == "Leeds United"){
             this.primaryColor = color (255);
             this.secondaryColor = color (209, 220, 30);
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }
         else if (this.team == "Leicester City"){
             this.primaryColor = color(25,70,155);
             this.secondaryColor = color(238, 178, 30);
             this.textColor = color(255);
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }
         else if (this.team == "Liverpool"){
             this.primaryColor = color (209, 4, 37);
             this.secondaryColor = color (248, 152, 104);
             this.textColor = color(255);
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }
         else if (this.team == "Manchester City"){
             this.primaryColor = color(105, 190, 239);
             this.secondaryColor = color (255);
             this.textColor = color(255);
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }
         else if (this.team == "Manchester United"){
             this.primaryColor = color(226, 39, 46);
             this.secondaryColor = color(255, 230, 0);
             this.textColor = color(255);
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }
         else if (this.team == "Newcastle United"){
             this.primaryColor = color(255);
@@ -171,51 +147,37 @@ class PremPlayer {
             this.tertiaryColor = color(0);
             this.textColor = color(255,0,0);
             this.striped = true;
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }
         else if (this.team == "Norwich City"){
             this.primaryColor = color(251, 214, 1);
             this.secondaryColor = color(1, 139, 20);
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }        
         else if (this.team == "Southampton"){
             this.primaryColor = color(255);
             this.tertiaryColor = color(0);
             this.secondaryColor = color(242, 38, 47);
             this.striped = true;
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }
         else if (this.team == "Tottenham Hotspur"){
             this.primaryColor = color (255);
             this.secondaryColor = color (34, 42, 71);
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }
         else if (this.team == "Watford"){
             this.primaryColor = color (229, 211, 67);
             this.secondaryColor = color (0);
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }
         else if (this.team == "West Ham United"){
             this.primaryColor = color (192, 216, 228);
             this.secondaryColor = color (117, 22, 44);
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }
         else if (this.team == "Wolverhampton Wanderers"){
             this.primaryColor = (0);
             this.secondaryColor = color (249, 203, 48);
             this.textColor = color(249, 203, 48);
-            this.xIncrement = this.code*this.displacement;
-            this.yIncrement = height-this.order*this.upDisplacement;
         }
     }
     drawPlayer(){
-        if (this.striped == false){
+        if (this.striped == false){ // Solid jerseys
             strokeWeight(this.strokeWeight);
             stroke(this.secondaryColor);
             fill(this.primaryColor);
@@ -225,7 +187,7 @@ class PremPlayer {
             fill(this.textColor);
             textSize(this.numberSize);
             text (this.number,this.x+this.xIncrement,this.y+5-this.yIncrement);
-        } else {
+        } else { // Striped jerseys
             strokeWeight(this.strokeWeight);
             stroke(this.tertiaryColor);
             fill(this.primaryColor)
@@ -241,14 +203,14 @@ class PremPlayer {
             text (this.number,this.x+this.xIncrement,this.y+5-this.yIncrement);
         }
     }
-    redCards() {
+    redCards() { // Finds players who got a red card and appends a red card icon to them. 
         if (this.reds != 0){
             rectMode(CENTER);
             fill(255,0,0);
             rect(this.x+this.xIncrement+(this.diameter*.4),this.y-this.yIncrement-(this.diameter*.4),5,10);
         }
     }
-    goalsScored() {
+    goalsScored() { // Finds players who scored at least one goal and appends a goal icon to them.
         if (this.goals != 0){
             strokeWeight(1);
             stroke(0);
@@ -256,7 +218,7 @@ class PremPlayer {
             ellipse(this.x+this.xIncrement-(this.diameter*.4),this.y-this.yIncrement-(this.diameter*.4),10);
         }
     }
-    singleAppearance() {
+    singleAppearance() { // Finds players who only played one match, either as a stsarter or sub
         if(this.appearances ==1 || (this.appearances == 0 && this.subs == 1)){ 
             this.drawPlayer();
             this.redCards();
@@ -264,12 +226,11 @@ class PremPlayer {
         }
     }
     exceptionalCases(){
-        if(this.appearances == 1 && (this.goals > 0 || this.reds > 0)){
-            print("found somebody!");
+        if(this.appearances == 1 && (this.goals > 0 || this.reds > 0)){ // Of the players who played only one match (note: none of the sub-only players were remarkable), who scored a goal or got a red card?
             this.x = width/6;
             this.y = height+100;
-            this.newOrder = newOrder;
-            newOrder++;
+            this.newOrder = newOrder; // "Order" is team-specific, so I need to give each player a new index value here in order for the list to format correctly.
+            newOrder++; //Hoooow does it feeeel
             this.upDisplacement = 100;
             this.diameter = 25;
             this.numberSize = 16;
@@ -296,23 +257,18 @@ function mouseReleased(){
     if (slideNumber == 1){
         print("Creating players!");
         for (var k = 0;k<players.length;k++){
-            print("running timer!")
             players[k].drawPlayer();
         }
-        print(slideNumber);
-        print(slideNumber);
     }
      if(slideNumber == 2){
         print("Issuing cards");
         for(var k = 0;k<players.length;k++){
-            print("Giving em out!");
             players[k].redCards();
         }
     } 
     if(slideNumber ==3){
         print("Scoring goooooooooaaaals!");
         for(var k = 0;k<players.length;k++){
-            print("goooooooooool");
             players[k].goalsScored();
         }
     }
@@ -331,8 +287,7 @@ function mouseReleased(){
         }
     }
 }
-
-function drawPitch(){
+function drawPitch(){ // I ended up making this its own function for the sake of refreshing the screen. Ended up being easier.
     background(53, 159, 1);
     stroke(255);
     strokeWeight(10);
