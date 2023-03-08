@@ -1,4 +1,4 @@
-# There's Only One Moise Kean - An Exploration of the 2020-2021 Premier League Season
+# There's Only One Moise Kean - An Exploration of the 2021-2022 Premier League Season
 
 This project takes data on every player who played at least one match in the English Premier League and creates objects representing each player and their statistics. The players are divided up by teams and arranged in order, then eliminated if they played more than a single match. From the remaining players, this program identifies players who did something remarkable in their only match - i.e. a Red Card or a goal. The program then presents those players, with their names and team. The entire program could perform the above tasks with any data set for any league, provided it was formatted correctly and team colors could be updated. 
 
