@@ -7,9 +7,21 @@ Stephen
 
 let table;
 let players = [];
+let legend = [];
 let slideNumber = 0;
 let newOrder = 1;
 let wonderkids = [];
+let margin = 250;
+let allTeams = ["Arsenal","Aston Villa","Brentford","Brighton and Hove Albion","Burnley","Chelsea","Crystal Palace","Everton","Leeds United","Leicester City","Liverpool","Manchester City","Manchester United","Newcastle United","Norwich City","Southampton","Tottenham Hotspur","Watford","West Ham United","Wolverhampton Wanderers"]
+let backgroundOpacity = 0;
+let fadedBackground = false;
+let explanation = ["","Every Premier League Player, 2020-2021","Red-Carded Players","Goalscorers","Players With Only 1 Appearance","Singleton Players With a Goal or a Red Card"];
+let badBoys = [];
+let goalScorers = [];
+let singletons = [];
+let goalGrid = [];
+let redGrid = [];
+
 
 function preload() {
     table = loadTable("premStats.csv","csv","header");
@@ -17,9 +29,8 @@ function preload() {
 }
 
 function setup() {
-    createCanvas(1000,1000);
-    background(53, 159, 1);
-    drawPitch();
+    createCanvas(1500,1000);
+    
     for (let i = 0; i<table.getRowCount();i++){
         players[i] = new PremPlayer(table.getString(i,0),   // Team Name
                                     table.get(i,1),         // Jersey Number
@@ -34,11 +45,63 @@ function setup() {
                                     table.get(i,10),        // Team Code
                                     table.get(i,11))        // Player Code
         }
-    print(players);
+    for(let i = 0; i<20;i++){
+        legend[i] = new PremPlayer(allTeams[i])    // Team Names
+        legend[i].createLegend(i,allTeams[i]);
+        fill(255);
+        noStroke();
+        text(allTeams[i], 1100, 170+(i*42));
+    }
+    
+    // Makes a 20*20 grid for Goalscorers
+    for(let i=0;i<20;i++){
+        for(let k = 0;k<20;k++){
+            goalGrid.push(new p5.Vector((i*40)+100,(k*40)+100));
+        }
+    }
+
+    // Makes a 10X10 Grid for Red Cards
+    for(let i=0;i<10;i++){
+        for(let k = 0; k<10;k++){
+            redGrid.push(new p5.Vector((i*100)+100,(k*100)+100));
+        }
+    }
+    drawPitch();
 }
 
 function draw() {
-    
+ /*    if(slideNumber==2){
+        print(redGrid);
+        drawPitch();
+        opacityFilter();
+        for(let i=0;i<badBoys.length;i++){
+            if (badBoys[i].striped == false){ // Solid jerseys
+                strokeWeight(badBoys[i].strokeWeight);
+                stroke(badBoys[i].secondaryColor);
+                fill(badBoys[i].primaryColor);
+                circle(redGrid[i].x,redGrid[i].y,badBoys[i].diameter)
+                textAlign(CENTER);
+                noStroke();
+                fill(badBoys[i].textColor);
+                textSize(badBoys[i].numberSize);
+                text (badBoys[i].number,redGrid[i].x,redGrid[i].y);
+            } else { // Striped jerseys
+                strokeWeight(badBoys[i].strokeWeight);
+                stroke(badBoys[i].tertiaryColor);
+                fill(badBoys[i].primaryColor)
+                circle(badBoys[i].x,badBoys[i].y,badBoys[i].diameter)
+                rectMode(CENTER);
+                noStroke();
+                fill(badBoys[i].secondaryColor);
+                rect(badBoys[i].x,badBoys[i].y,(badBoys[i].diameter/4),badBoys[i].diameter*.80)
+                textAlign(CENTER);
+                noStroke();
+                fill(badBoys[i].textColor);
+                textSize(badBoys[i].numberSize);
+                text (badBoys[i].number,badBoys[i].x+badBoys[i].y+5);
+            }
+        }
+    }  */
 }
 
 class PremPlayer {
@@ -72,6 +135,7 @@ class PremPlayer {
         this.newOrder = 0;
         this.xIncrement = this.code*this.displacement;
         this.yIncrement = height-this.order*this.upDisplacement;
+        this.vectorLocation = new p5.Vector(this.x+this.xIncrement,this.y+this.yIncrement);
 
         // The below block determines the colors of the center, ring, stripe (if applicable) and text of each player
         if (this.team == "Arsenal"){
@@ -176,6 +240,36 @@ class PremPlayer {
             this.textColor = color(249, 203, 48);
         }
     }
+    createLegend(index,name){
+        this.name = name
+        this.x = 1050;
+        this.y = (index*42)+165;
+        this.diameter = 30
+        if(this.name == "Brentford" || this.name == "Brighton and Hove Albion" || this.name == "Newcastle United" || this.name == "Southampton"){
+            strokeWeight(this.strokeWeight);
+            stroke(this.tertiaryColor);
+            fill(this.primaryColor);
+            circle(this.x,this.y,this.diameter);
+            rectMode(CENTER);
+            noStroke();
+            fill(this.secondaryColor);
+            rect(this.x,this.y,(this.diameter/4),this.diameter*.80);
+        }
+        else {
+            strokeWeight(4);
+            stroke(this.secondaryColor);
+            fill(this.primaryColor);
+            circle(this.x,this.y,this.diameter);
+        }
+        stroke(0);
+        fill(255);
+        ellipse(1350,500,15);
+        text("Goal Scorer",1375,505);
+        text("Red-Carded",1375,535);
+        fill(255,0,0);
+        rect(1350,530,10,15)
+    }
+
     drawPlayer(){
         if (this.striped == false){ // Solid jerseys
             strokeWeight(this.strokeWeight);
@@ -203,15 +297,47 @@ class PremPlayer {
             text (this.number,this.x+this.xIncrement,this.y+5-this.yIncrement);
         }
     }
+    drawPlayerGrid(){
+        if (this.striped == false){ // Solid jerseys
+            strokeWeight(this.strokeWeight);
+            stroke(this.secondaryColor);
+            fill(this.primaryColor);
+            circle(this.x,this.y,this.diameter)
+            textAlign(CENTER);
+            noStroke();
+            fill(this.textColor);
+            textSize(this.numberSize);
+            text (this.number,this.x,this.y+5);
+        } else { // Striped jerseys
+            strokeWeight(this.strokeWeight);
+            stroke(this.tertiaryColor);
+            fill(this.primaryColor)
+            circle(this.x,this.y,this.diameter)
+            rectMode(CENTER);
+            noStroke();
+            fill(this.secondaryColor);
+            rect(this.x,this.y,(this.diameter/4),this.diameter*.80)
+            textAlign(CENTER);
+            noStroke();
+            fill(this.textColor);
+            textSize(this.numberSize);
+            text (this.number,this.x,this.y+5);
+    }
+    }
     redCards() { // Finds players who got a red card and appends a red card icon to them. 
         if (this.reds != 0){
+            badBoys.push(this);
+            badBoys[badBoys.length-1].drawPlayer();
             rectMode(CENTER);
             fill(255,0,0);
             rect(this.x+this.xIncrement+(this.diameter*.4),this.y-this.yIncrement-(this.diameter*.4),5,10);
+            
         }
     }
     goalsScored() { // Finds players who scored at least one goal and appends a goal icon to them.
         if (this.goals != 0){
+            goalScorers.push(this);
+            goalScorers[goalScorers.length-1].drawPlayer();
             strokeWeight(1);
             stroke(0);
             fill(255);
@@ -232,11 +358,10 @@ class PremPlayer {
             this.newOrder = newOrder; // "Order" is team-specific, so I need to give each player a new index value here in order for the list to format correctly.
             newOrder++; //Hoooow does it feeeel
             this.upDisplacement = 100;
-            this.diameter = 25;
+            this.diameter = 35;
             this.numberSize = 16;
             this.xIncrement = 0;
             this.yIncrement = height-this.newOrder*this.upDisplacement;
-            print(this.yIncrement);
             this.drawPlayer();
             this.redCards();
             this.goalsScored();
@@ -255,6 +380,8 @@ class PremPlayer {
 function mouseReleased(){
     slideNumber++;
     if (slideNumber == 1){
+        drawPitch();
+        opacityFilter();
         print("Creating players!");
         for (var k = 0;k<players.length;k++){
             players[k].drawPlayer();
@@ -262,12 +389,16 @@ function mouseReleased(){
     }
      if(slideNumber == 2){
         print("Issuing cards");
+        drawPitch();
+        opacityFilter();
         for(var k = 0;k<players.length;k++){
             players[k].redCards();
         }
     } 
     if(slideNumber ==3){
         print("Scoring goooooooooaaaals!");
+        drawPitch();
+        opacityFilter();
         for(var k = 0;k<players.length;k++){
             players[k].goalsScored();
         }
@@ -275,6 +406,7 @@ function mouseReleased(){
     if(slideNumber == 4){
         print("Getting subbed off!");
         drawPitch();
+        opacityFilter();
         for(var k = 0;k<players.length;k++){
             players[k].singleAppearance();
         }
@@ -282,6 +414,7 @@ function mouseReleased(){
     if(slideNumber == 5){
         print("Narrowing down!")
         drawPitch();
+        opacityFilter();
         for(var k = 0;k<players.length;k++){
             players[k].exceptionalCases();
         }
@@ -289,18 +422,48 @@ function mouseReleased(){
 }
 function drawPitch(){ // I ended up making this its own function for the sake of refreshing the screen. Ended up being easier.
     background(53, 159, 1);
+    noStroke();
+    fill(0);
+    rectMode(CORNER);
+    textAlign(LEFT);
+    rect(1000,0,500,1000);
+    fill(255);
+    textSize(32);
+    text("There's Only One Moise Kean",1025,50);
+    textSize(16);
+    text("An Exploration of the 2021-2022 Premier League Season",1025,80);
+    for(let i = 0; i<20;i++){
+       
+        legend[i].createLegend(i,allTeams[i]);
+        fill(255);
+        noStroke();
+        textAlign(LEFT);
+        textSize(16);
+        text(allTeams[i], 1100, 170+(i*42));
+    }
+    textAlign(CENTER);
+    text(explanation[slideNumber],1250,120);
+    textAlign(LEFT);
     stroke(255);
     strokeWeight(10);
     fill(53,159,1);
     rectMode(CENTER);
-    rect(width/2,height/2,700,900); // Pitch lines
-    circle(width/2,height/2,150)    // Midfield circle
+    rect((width/2)-margin,height/2,700,900); // Pitch lines
+    circle((width/2)-margin,height/2,150)    // Midfield circle
     line(150,500,850,500); // Midfield line
-    circle(width/2,225,150);
-    circle(width/2,775,150);
-    rect(width/2,150, 450,200);
-    rect(width/2,850, 450,200);
-    rect(width/2,90, 250,75);
-    rect(width/2,910, 250,75);
+    circle((width/2)-margin,225,150); // Pen box circle, top
+    circle((width/2)-margin,775,150); // Pen box circle, bottom
+    rect((width/2)-margin,150, 450,200); // Pen box, top
+    rect((width/2)-margin,850, 450,200); // Pen box, bottom
+    rect((width/2)-margin,90, 250,75); // 6-yard box, top
+    rect((width/2)-margin,910, 250,75); // 6-yard box, bottom
 }
 
+function opacityFilter(){
+    for(let backgroundOpacity=0;backgroundOpacity<25;backgroundOpacity++){
+        noStroke();
+        fill(255,backgroundOpacity);
+        rect(500,500,1000,1000);
+        backgroundOpacity++;
+        }
+}
