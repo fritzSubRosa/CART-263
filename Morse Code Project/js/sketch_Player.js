@@ -4,18 +4,22 @@ CART253, Creative Computation, Fall 2022
 Concordia University
 l wilkins
 
-The goal of this project is to pass along a variable between programs to create a chain. Every person will get a number from someone else, use this number to create a piece of generative art, then pass along a new number to the next person.
-
-
 We are using the Eclipse Paho MQTT client library: https://www.eclipse.org/paho/clients/js/ to create an MQTT client that sends and receives messages. The client is set up for use on the shiftr.io test MQTT broker (https://shiftr.io/try)
+
+ACCESS HERE!!
+https://editor.p5js.org/FancyPants/full/bP6zyULu9 
+
+Example from:
+https://developer.mozilla.org/en-US/docs/Web/API/Navigator/vibrate 
+
 
 */
 
 
+///////////////////////////////////////MQTT client details///////////////////////////////////////////////
 
-// Rube Goldberg setup, update with your own info!
-let myName = "jake"; // Who are you? Make sure it matches the previous person's variable! 
-let nextName = "mimi"; // Who is next on the list? Make sure it matches the next person's variable!
+let myName = "Player"; // Who are you? Make sure it matches the previous person's variable! 
+let nextName = "Main"; // Who is next on the list? Make sure it matches the next person's variable!
 let dataToSend;  // Variable to hold the data to send to the next person on the list
 let timer = false;
 let duration = 2;
@@ -34,28 +38,33 @@ let creds = {
   userName: 'public', 
   password: 'public' 
 }
-let topic = 'CART253'; // This is the topic we are all subscribed to
+let topic = 'MorseCode'; // This is the topic we are all subscribed to
 
-// End of MQTT client details 
+///////////////////////////////////////Player details////////////////////////////////////////////////
 
+var myButton1;
 
 
 function setup() {
   // Normal program setup goes here
-  createCanvas(800, 400);
+  createCanvas(960, 540);
   background(50);
   MQTTsetup(); // Setup the MQTT client
+
 }
 
-function draw() {
 
+function draw() {
+  
 }
 
 function mousePressed(){ 
   // Sends a message on mouse pressed to test. You can use sendMQTTMessage(msg) at any time, it doesn't have to be on mouse pressed. 
   sendMQTTMessage(95); // This function takes 1 parameter, here I used a random number between 0 and 255 and constrained it to an integer. You can use anything you want.
-  
+  background(random(255), 0, 50);
 }
+
+
 
 // When a message arrives, do this: 
 function onMessageArrived(message) {
@@ -68,6 +77,8 @@ function onMessageArrived(message) {
   if(dataReceive[1] == myName){ // Check if its for me
     console.log("Its for me! :) ");
     console.log(dataReceive[2]);
+
+
     endTime = millis() + (duration*1000);
      timer = true;
      print("start timer");
@@ -101,6 +112,11 @@ if(millis() > endTime){
  } else {
  background(255, 0, 0);
 }
+
+
+
+//////////////////////////////////////////////MQTT/////////////////////////////////////////////
+
 }
 // Callback functions
 function onConnect() {
