@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/addons/p5.sound.min.js">           </script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="utf-8" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
+    <script src="sketch.js"></script>
+  </head>
+  <body>
+    <input type="text" id="Name" value="Write your username here!">
+    <button id="buttonName" onclick="defineUsername()">Submit</button>
+    <p id="Username"></p>
+    
+    <input type="text" id="answer" value="Type your guess here">
+    <button onclick="submitAnswer()">Submit</button>
+    <p id="guess"></p>
+  </body>
+</html>
