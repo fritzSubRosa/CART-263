@@ -29,6 +29,7 @@ let topic = 'MorseCode'; // This is the topic we are all subscribed to
 
 
 // dot is 0 dash is 1
+let imageRef;
 let letterTimer = 0;
 let symbolTimer = 0;
 let storedTime = 0;
@@ -44,7 +45,7 @@ let promptWord;
 let answerKey=["01","A","1000","B","1010","C","100","D","0","E","0010","F","110","G","0000","H","00","I","0111","J","101","K","0100","L","11","M","10","N","111","O","0110","P","1101","Q","010","R","000","S","1","T","001","U","0001","V","011","W","1001,","X","1011","Y","1100","Z"];
 
 function preload() {
-
+  imageRef = loadImage("assets/images/morsecode.png")
 }
 
 function setup() {
@@ -82,6 +83,7 @@ function draw() {
     if(identifyLetter == true){
         decodeLetter();
     }
+   image(imageRef,width/3,(height-height/3),300,300);
 }
 function mousePressed(){
     recording = true;
@@ -114,7 +116,7 @@ function decodeLetter(){
             print(join(wordArray,""));
         }
     }
-    identifyLetter = false;
+    identifyLetter =  false;
     symbolArray = [];
 }
 
@@ -139,7 +141,7 @@ function onMessageArrived(message) {
   // 0 is who its from
   // 1 is who its for
   // 2 is the data
-    if(dataReceive[1] == myName){ // Check if its for me
+ /*   if(dataReceive[1] == myName){ // Check if its for me
       console.log("Its for me! :) ");
       console.log(dataReceive[2]);
       endTime = millis() + (duration*1000);
@@ -150,11 +152,12 @@ function onMessageArrived(message) {
     } else {
       console.log("Not for me! :( ");
     }
-    if(int(dataReceive[3]) > 10){ 
+/*    if(int(dataReceive[3]) > 10){ 
       console.log("yes!");
     } else { 
       console.log("nope");
     }
+*/
   }
   
   // Sending a message
@@ -177,6 +180,7 @@ function onConnect() {
 }
 function onConnectionLost(response) {
   if (response.errorCode !== 0) {
+    print("Connection lost");
     // If it stops working
   }
 }
