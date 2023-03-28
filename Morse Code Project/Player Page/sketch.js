@@ -104,10 +104,10 @@ function onMessageArrived(message) {
   } else {
     console.log("Not for me! :( ");
   }
-  if(int(dataReceive[3]) > 10){ 
-    console.log("yes!");
+  if(int(dataReceive[2]) == 0){ 
+    console.log("dot");
   } else { 
-    console.log("nope");
+    console.log("dash");
   }
 }
 
