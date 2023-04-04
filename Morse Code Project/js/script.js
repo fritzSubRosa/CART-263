@@ -137,7 +137,7 @@ function recordSymbol(){
 function onMessageArrived(message) {
     let dataReceive = split(trim(message.payloadString), "/");// Split the incoming message into an array deliniated by "/"
     console.log("Message Received:");
-    console.log(String(dataReceive[1])); 
+    console.log(String(dataReceive[3])); 
   // 0 is who its from
   // 1 is who its for
   // 2 is the data
