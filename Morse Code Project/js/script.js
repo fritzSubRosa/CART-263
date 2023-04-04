@@ -3,13 +3,15 @@
 
 // Rube Goldberg setup, update with your own info!
 let myName = "Main"; // Who are you? Make sure it matches the previous person's variable! 
-let nextName = "Main"; // Who is next on the list? Make sure it matches the next person's variable!
+let nextName = "Player"; // Who is next on the list? Make sure it matches the next person's variable!
 let dataToSend;  // Variable to hold the data to send to the next person on the list
 //let timer = false;
 //let duration = 2;
 //let endTime;
 //let myInterval; 
 let message;
+let allPlayers = [];
+let newPlayer;
 
 // MQTT client details. We are using a public server called shiftr.io. Don't change this. 
 let broker = {
@@ -133,31 +135,51 @@ function recordSymbol(){
     }
 }
 
+class Player {
+  constructor(username,guess,timer){
+    this.username = username;
+    this.guess = guess;
+    this.timer = timer;
+    this.correct = 0;
+    this.incorrect = 0;
+    this.accuracy;
+    this.guessArray = [];
+  }
+
+  scoreMe(){
+    this.guessArray = split(this.guess,"");
+    console.log(wordArray);
+    console.log(this.guessArray);
+    for(let i=0;i<wordArray.length;i++){
+      if(wordArray[i] == guessArray[i]){
+        console.log("correct!")
+        this.correct++;
+      }
+      else{
+        console.log("incorrect!")
+        this.incorrect++;
+      }
+    }
+    console.log("player scored!");
+    console.log(allPlayers);
+  }
+}
+
 // When a message arrives, do this: 
 function onMessageArrived(message) {
     let dataReceive = split(trim(message.payloadString), "/");// Split the incoming message into an array deliniated by "/"
     console.log("Message Received:");
-    console.log(String(dataReceive[3])); 
-  // 0 is who its from
-  // 1 is who its for
-  // 2 is the data
- /*   if(dataReceive[1] == myName){ // Check if its for me
-      console.log("Its for me! :) ");
-      console.log(dataReceive[2]);
-      endTime = millis() + (duration*1000);
-       timer = true;
-       print("start timer");
-       myInterval = setInterval(checkTimer);
-      console.log(dataReceive[2]);
-    } else {
-      console.log("Not for me! :( ");
+    if(dataReceive[1]==myName){
+      console.log("For me!")
+      console.log(String(dataReceive[3])); 
+      newPlayer = new Player (dataReceive[2],dataReceive[3],dataReceive[4]);
+      console.log("Data sorted");
+      append(allPlayers,newPlayer);
+      console.log("Player generated");
+      newPlayer.scoreMe();
+      console.log("Player scored");
+      console.log(allPlayers);
     }
-/*    if(int(dataReceive[3]) > 10){ 
-      console.log("yes!");
-    } else { 
-      console.log("nope");
-    }
-*/
   }
   
   // Sending a message
