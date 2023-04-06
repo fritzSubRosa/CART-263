@@ -26,7 +26,6 @@ let creds = {
   password: 'public' 
 }
 let topic = 'MorseCode'; // This is the topic we are all subscribed to
-
 // End of MQTT client details 
 
 
@@ -47,12 +46,13 @@ let promptWord;
 let answerKey=["01","A","1000","B","1010","C","100","D","0","E","0010","F","110","G","0000","H","00","I","0111","J","101","K","0100","L","11","M","10","N","111","O","0110","P","1101","Q","010","R","000","S","1","T","001","U","0001","V","011","W","1001,","X","1011","Y","1100","Z"];
 
 function preload() {
-  imageRef = loadImage("assets/images/morsecode.png")
+  imageRef = loadImage("assets/images/morsecode.png");
+  qrCode = loadImage("assets/images/qr.png");
 }
 
 function setup() {
-    createCanvas(1000,1000);
-    background(0);
+    createCanvas(windowWidth, windowHeight);
+    background(130);
     frameRate(30);
     promptWord = promptArray[int(random(0,promptArray.length))];
     print(promptWord);
@@ -60,6 +60,21 @@ function setup() {
 }
 
 function draw() {
+  ////////////Decor in construction :)/////////////
+  let xa = windowWidth/6;
+  let ya = 150;
+  let xb = (windowWidth/3)*2;
+  let yb = 300;
+  let xc = windowWidth;
+  let yc = 250;
+    push();
+    stroke(50);
+    noFill();
+    strokeWeight(6)
+    bezier(xa, ya, xb, yb, xb, yb, xc, yc);
+    pop();
+  /////////////////////////////
+
     fill(255);
     textSize(32);
     textAlign(CENTER);
@@ -76,7 +91,7 @@ function draw() {
         if (letterTimer > 30){
             identifyLetter = true;
             awaitingSymbol = false;
-            background(0);
+            background(130);
             letterTimer = 0;
             completeSymbol = join(symbolArray,"");
             print(completeSymbol);
@@ -124,17 +139,33 @@ function decodeLetter(){
 
 function recordSymbol(){
     symbolTimer++;
-    background(0);
+    background(130);
     fill(255);
     ellipse(width/2,height/2,100);
     if(symbolTimer>15){
-        background(0);
+        background(130);
         fill(255);
         rectMode(CENTER);
         rect(width/2,height/2,400,100);
     }
 }
+class Electricity{ //Live visual and sound as the telegraph is being used
+  constructor(){
 
+  }
+  current(){
+    let t=0; 
+    x = lerp(xa, xb, i);
+    y = lerp(ya, yb, i);
+    ellipse(x, y, 66, 66);
+    t+=0.1;
+  }
+  beep(){
+
+  }
+}
+
+///////////////////////Score//////////////////
 class Player {
   constructor(username,guess,timer){
     this.username = username;
@@ -165,6 +196,7 @@ class Player {
   }
 }
 
+//////////////////////////////MQTT//////////////////////////////////
 // When a message arrives, do this: 
 function onMessageArrived(message) {
     let dataReceive = split(trim(message.payloadString), "/");// Split the incoming message into an array deliniated by "/"
@@ -190,9 +222,6 @@ function onMessageArrived(message) {
         console.log("Message Sent!");
         client.send(message);
   }
-
-
-//////////////////////////////////////////////MQTT/////////////////////////////////////////////
 
 // Callback functions
 function onConnect() {
