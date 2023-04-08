@@ -48,6 +48,7 @@ let answerKey=["01","A","1000","B","1010","C","100","D","0","E","0010","F","110"
 ////////Visual and sounds////////
 let points = [];
 let arraySize =0;
+let myFont;
 
 function preload() {
   imageRef = loadImage("assets/images/morsecode.png");

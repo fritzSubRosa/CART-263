@@ -9,7 +9,7 @@ Also hides overflow.
 
 **********************************************/
 
-body {
+body {  
   padding: 0;
   margin: 0;
   display: grid; /* Set up the grid and justify/align to center */
