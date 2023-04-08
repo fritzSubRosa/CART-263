@@ -35,7 +35,7 @@ let letterTimer = 0;
 let symbolTimer = 0;
 let storedTime = 0;
 let completeSymbol;
-let recording = false;
+let recording = false; //I'LL use it too!! ^^ can we change it to mouseState?
 let awaitingSymbol = false;
 let identifyLetter = false;
 let symbolArray=[];
@@ -45,48 +45,52 @@ let promptArray=["rambunctious","modified","rapscallion","pungent","scullion","p
 let promptWord;
 let answerKey=["01","A","1000","B","1010","C","100","D","0","E","0010","F","110","G","0000","H","00","I","0111","J","101","K","0100","L","11","M","10","N","111","O","0110","P","1101","Q","010","R","000","S","1","T","001","U","0001","V","011","W","1001,","X","1011","Y","1100","Z"];
 
+////////Visual and sounds////////
+let points = [];
+let arraySize =0;
+
 function preload() {
   imageRef = loadImage("assets/images/morsecode.png");
-  qrCode = loadImage("assets/images/qr.png");
+  //qrCode = loadImage("assets/images/qr.png");
+  myFont = loadFont('assets/ordrededepart.ttf');
 }
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
-    background(130);
     frameRate(30);
     promptWord = promptArray[int(random(0,promptArray.length))];
     print(promptWord);
     MQTTsetup();
+    points.push(new Electricity());
 }
 
 function draw() {
-  ////////////Decor in construction :)/////////////
-  let xa = windowWidth/6;
-  let ya = 150;
-  let xb = (windowWidth/3)*2;
-  let yb = 300;
-  let xc = windowWidth;
-  let yc = 250;
-    push();
-    stroke(50);
-    noFill();
-    strokeWeight(6)
-    bezier(xa, ya, xb, yb, xb, yb, xc, yc);
-    pop();
+  ////////////visual and sounds/////////////
+  fill(0);
+  background(30);
+  points[0].wire();
+  
+  for ( let j=0; j<arraySize ; j++){
+    points[j].path();
+  }
+  if (recording==1) {
+    points.push(new Electricity());
+    arraySize++; 
+  }
   /////////////////////////////
 
     fill(255);
     textSize(32);
     textAlign(CENTER);
+    textFont(myFont);
     text(promptWord,width/2,height/8);
     text(join(wordArray,""),width/2,height/4);
     if(recording == true){
         recordSymbol();
     }
-    if(awaitingSymbol == true){
-        //check if the letter is complete by waiting
-        fill(0,255,255);
-        ellipse(width-(width/4), height-(height/4),25);
+    if(awaitingSymbol == true){ //check if the letter is complete by waiting
+        //fill(0,255,255);
+        //ellipse(width-(width/4), height-(height/4),25);
         letterTimer++
         if (letterTimer > 30){
             identifyLetter = true;
@@ -139,29 +143,54 @@ function decodeLetter(){
 
 function recordSymbol(){
     symbolTimer++;
-    background(130);
-    fill(255);
-    ellipse(width/2,height/2,100);
+    print("dot"); 
+    //background(130);
+    //fill(255);
+    //ellipse(width/2,height/2,100);
     if(symbolTimer>15){
-        background(130);
-        fill(255);
-        rectMode(CENTER);
-        rect(width/2,height/2,400,100);
+      print("dash");
+        //background(130);
+        //fill(255);
+        //rectMode(CENTER);
+        //rect(width/2,height/2,400,100);
     }
 }
-class Electricity{ //Live visual and sound as the telegraph is being used
+
+class Electricity{ //Live visual of electricity as the telegraph is being used
   constructor(){
+    this.beginX = windowWidth/6;  // Initial x-coordinate
+    this.beginY = 150;  // Initial y-coordinate
+    this.endX = windowWidth+100;   // Final x-coordinate
+    this.endY = 250;   // Final y-coordinate
+    this.exponent = 0.2;   // Determines the curve
 
+    this.distX = this.endX - this.beginX;// X-axis distance to move
+    this.distY = this.endY - this.beginY;// Y-axis distance to move
+    this.x = 0.0;        // Current x-coordinate
+    this.y = 0.0;        // Current y-coordinate
+    this.step = 0.01;    // Size of each step along the path
+    this.pct = 0;      // Percentage traveled (0.0 to 1.0)
   }
-  current(){
-    let t=0; 
-    x = lerp(xa, xb, i);
-    y = lerp(ya, yb, i);
-    ellipse(x, y, 66, 66);
-    t+=0.1;
-  }
-  beep(){
 
+  path(){
+  this.pct += this.step;
+  if (this.pct < 1.0) {
+    this.x = this.beginX + (this.pct * this.distX);
+    this.y = this.beginY + (pow(this.pct, this.exponent) * this.distY);//pow(n^e) <-- exponents in p5js
+  }
+  fill(0);
+  ellipse(this.x, this.y, 20, 20);
+  }
+  wire(){
+    this.pct = this.step;
+    
+    for(; this.pct< 1.0; this.pct += this.step){
+      this.x = this.beginX + (this.pct * this.distX);
+      this.y = this.beginY + (pow(this.pct, this.exponent) * this.distY);
+      fill(0);
+      ellipse(this.x, this.y, 10, 10); 
+    }
+    
   }
 }
 
