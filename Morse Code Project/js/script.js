@@ -48,12 +48,19 @@ let answerKey=["01","A","1000","B","1010","C","100","D","0","E","0010","F","110"
 ////////Visual and sounds////////
 let points = [];
 let arraySize =0;
-let myFont;
+let qrCode;
+let morseCodeRef = "A || .- B || -... C || -.-. D || -.. E || .";
+let dotFont;
+let beepSound;
+let bark;
 
 function preload() {
   imageRef = loadImage("assets/images/morsecode.png");
-  //qrCode = loadImage("assets/images/qr.png");
-  myFont = loadFont('assets/ordrededepart.ttf');
+  qrCode = loadImage("assets/images/qrcode.png");
+  dotFont = loadFont('assets/ordrededepart.ttf');
+  //soundFormats('mp3', 'ogg');
+  //bark=loadSound("assets/sounds/bark.wav");
+  //beepSound = loadSound("assets/sounds/478946__skibkamusic__morse_code_radio_ss_hq.mp3");
 }
 
 function setup() {
@@ -63,14 +70,41 @@ function setup() {
     print(promptWord);
     MQTTsetup();
     points.push(new Electricity());
+
 }
 
 function draw() {
   ////////////visual and sounds/////////////
   fill(0);
-  background(30);
+  background(130);
+  push();
+  fill(30);
+  noStroke;
+  beginShape();
+  curveVertex(0, windowHeight);
+  curveVertex(0, windowHeight);
+  curveVertex(0, windowHeight-46);
+  curveVertex((windowWidth/6), windowHeight-60);
+  curveVertex((windowWidth/6)*2, windowHeight-51);
+  curveVertex((windowWidth/6)*3, windowHeight-32);
+  curveVertex((windowWidth/6)*4, windowHeight-27);
+  curveVertex((windowWidth/6)*5, windowHeight-41);
+  curveVertex((windowWidth/6)*6, windowHeight-61);
+  curveVertex((windowWidth/6)*6, windowHeight+60);
+  curveVertex((windowWidth/6)*6, windowHeight+200);
+  endShape();
+  strokeWeight(50);
+  noFill();
+  line((windowWidth/6)-200, 100, (windowWidth/6)+150, 50);
+  line((windowWidth/6)-20, 100, (windowWidth/6)+70, windowHeight-50);
+  strokeWeight(20);
+  curve(-200, 100, 0, 170, windowWidth/6, 150, (windowWidth/6)+50, 0);
+  pop();
+  image(qrCode, windowWidth-50-200, windowHeight-50-200, 200, 200);
+
+  ///////electric cable//////
+
   points[0].wire();
-  
   for ( let j=0; j<arraySize ; j++){
     points[j].path();
   }
@@ -80,10 +114,10 @@ function draw() {
   }
   /////////////////////////////
 
-    fill(255);
+    fill(30);
     textSize(32);
     textAlign(CENTER);
-    textFont(myFont);
+    textFont(dotFont);
     text(promptWord,width/2,height/8);
     text(join(wordArray,""),width/2,height/4);
     if(recording == true){
@@ -105,15 +139,20 @@ function draw() {
     if(identifyLetter == true){
         decodeLetter();
     }
-   image(imageRef,width/3,(height-height/3),300,300);
+    //text("A || .-",width/2,(height/8)*7);
+    // x, y position of box followed by width and height of the box
+    text(morseCodeRef, windowWidth/3,windowHeight/2,windowWidth/3,100);
+   //image(imageRef,width/3,(height-height/3),250,400);
 }
 function mousePressed(){
+    //beepSound.play();
     recording = true;
     awaitingSymbol = false;
     print("Recording!");
 }
 
 function mouseReleased(){
+    //beepSound.stop();
     recording = false;
     letterTimer = 0;
     storedTime = symbolTimer;
@@ -163,7 +202,7 @@ class Electricity{ //Live visual of electricity as the telegraph is being used
     this.beginY = 150;  // Initial y-coordinate
     this.endX = windowWidth+100;   // Final x-coordinate
     this.endY = 250;   // Final y-coordinate
-    this.exponent = 0.2;   // Determines the curve
+    this.exponent = 0.3;   // Determines the curve
 
     this.distX = this.endX - this.beginX;// X-axis distance to move
     this.distY = this.endY - this.beginY;// Y-axis distance to move
