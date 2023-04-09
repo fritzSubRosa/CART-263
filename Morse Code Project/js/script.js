@@ -46,16 +46,18 @@ let promptWord;
 let answerKey=["01","A","1000","B","1010","C","100","D","0","E","0010","F","110","G","0000","H","00","I","0111","J","101","K","0100","L","11","M","10","N","111","O","0110","P","1101","Q","010","R","000","S","1","T","001","U","0001","V","011","W","1001,","X","1011","Y","1100","Z"];
 
 ////////Visual and sounds////////
-let points = [];
-let arraySize =0;
-let qrCode;
+let slideState =0;     //In which page (start/game/score) are we in.
+let points = [];    //array of points that represent the electric current
+let arraySize =0;   //Size of the points array
+let qrCode;         //QR code image
 let morseCodeRef = "A || .- B || -... C || -.-. D || -.. E || .";
-let dotFont;
+let codeRef;       //Morse code reference image
+let dotFont;       //Special font made out of dots
 let beepSound;
 let bark;
 
 function preload() {
-  imageRef = loadImage("assets/images/morsecode.png");
+  codeRef = loadImage("assets/images/morsecode.png");
   qrCode = loadImage("assets/images/qrcode.png");
   dotFont = loadFont('assets/ordrededepart.ttf');
   //soundFormats('mp3', 'ogg');
@@ -70,16 +72,31 @@ function setup() {
     print(promptWord);
     MQTTsetup();
     points.push(new Electricity());
-
 }
 
 function draw() {
-  ////////////visual and sounds/////////////
+
+  ////////////background/////////////
   fill(0);
   background(130);
   push();
+  fill(110);
+  noStroke();
+  beginShape();
+  curveVertex(0, windowHeight);
+  curveVertex(0, windowHeight);
+  curveVertex(0, windowHeight-460);
+  curveVertex((windowWidth/6), windowHeight/2);
+  curveVertex((windowWidth/6)*2, windowHeight-130);
+  curveVertex((windowWidth/6)*3, windowHeight-200);
+  curveVertex((windowWidth/6)*4, windowHeight-120);
+  curveVertex((windowWidth/6)*5, windowHeight-299);
+  curveVertex((windowWidth/6)*6, windowHeight/2);
+  curveVertex((windowWidth/6)*6, windowHeight/2);
+  curveVertex((windowWidth/6)*6, windowHeight+20);
+  curveVertex((windowWidth/6)*6, windowHeight+20);
+  endShape();
   fill(30);
-  noStroke;
   beginShape();
   curveVertex(0, windowHeight);
   curveVertex(0, windowHeight);
@@ -93,17 +110,15 @@ function draw() {
   curveVertex((windowWidth/6)*6, windowHeight+60);
   curveVertex((windowWidth/6)*6, windowHeight+200);
   endShape();
+  pop();
   strokeWeight(50);
   noFill();
   line((windowWidth/6)-200, 100, (windowWidth/6)+150, 50);
   line((windowWidth/6)-20, 100, (windowWidth/6)+70, windowHeight-50);
   strokeWeight(20);
   curve(-200, 100, 0, 170, windowWidth/6, 150, (windowWidth/6)+50, 0);
-  pop();
-  image(qrCode, windowWidth-50-200, windowHeight-50-200, 200, 200);
 
   ///////electric cable//////
-
   points[0].wire();
   for ( let j=0; j<arraySize ; j++){
     points[j].path();
@@ -112,14 +127,26 @@ function draw() {
     points.push(new Electricity());
     arraySize++; 
   }
-  /////////////////////////////
 
-    fill(30);
-    textSize(32);
-    textAlign(CENTER);
-    textFont(dotFont);
-    text(promptWord,width/2,height/8);
-    text(join(wordArray,""),width/2,height/4);
+  /////////Images and instructions//////////////////
+  push();
+  noStroke();
+  fill(255);
+  rect((windowWidth/2)-100,(windowHeight/16*7)-35, 200, 45, 20);
+  fill(0);
+  text("Submit",windowWidth/2,(windowHeight/16*7));
+  pop();
+  image(codeRef,(windowWidth/2)-200,windowHeight/2,400,400);
+  image(qrCode, windowWidth-50-200, windowHeight-50-200, 200, 200);
+  textSize(22);
+  textFont("georgia");
+  textAlign(CENTER);
+  text("Use the QR code to join",windowWidth-50-100, windowHeight-300);
+  text("Write your one word answer to the prompt with the telegraph:",width/2,height/8);
+  textSize(32);
+  textFont(dotFont);
+  text(promptWord,width/2,height/6);
+  text(join(wordArray,""),width/2,height/8*3);
     if(recording == true){
         recordSymbol();
     }
@@ -139,10 +166,6 @@ function draw() {
     if(identifyLetter == true){
         decodeLetter();
     }
-    //text("A || .-",width/2,(height/8)*7);
-    // x, y position of box followed by width and height of the box
-    text(morseCodeRef, windowWidth/3,windowHeight/2,windowWidth/3,100);
-   //image(imageRef,width/3,(height-height/3),250,400);
 }
 function mousePressed(){
     //beepSound.play();
@@ -168,6 +191,16 @@ function mouseReleased(){
     storedTime = 0;
     print(symbolArray);
     awaitingSymbol = true;
+
+    /////////////Change slideState/////////
+    if(mouseX <=(windowWidth/2)+100 && mouseX >=(windowWidth/2)-100 && mouseY>=(windowHeight/16*7)-35 && mouseY<=(windowHeight/16*7)-35){ //If mouseX&mouseY are inside the button
+      //(windowWidth/2)-100,(windowHeight/16*7)-35, 200, 45
+      slideState++
+      print("slideState");
+      if(slideState>=2){
+
+      }
+    }
 }
 
 function decodeLetter(){
