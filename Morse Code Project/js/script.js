@@ -72,11 +72,9 @@ function setup() {
     print(promptWord);
     MQTTsetup();
     points.push(new Electricity());
-}
+  }
 
-function draw() {
-
-  ////////////background/////////////
+function basicVisuals(){ // Insert here everything we want to keep from one slide page to the other
   fill(0);
   background(130);
   push();
@@ -91,10 +89,10 @@ function draw() {
   curveVertex((windowWidth/6)*3, windowHeight-200);
   curveVertex((windowWidth/6)*4, windowHeight-120);
   curveVertex((windowWidth/6)*5, windowHeight-299);
-  curveVertex((windowWidth/6)*6, windowHeight/2);
-  curveVertex((windowWidth/6)*6, windowHeight/2);
-  curveVertex((windowWidth/6)*6, windowHeight+20);
-  curveVertex((windowWidth/6)*6, windowHeight+20);
+  curveVertex(windowWidth, windowHeight/2);
+  curveVertex(windowWidth, windowHeight/2);
+  curveVertex(windowWidth, windowHeight+20);
+  curveVertex(windowWidth, windowHeight+20);
   endShape();
   fill(30);
   beginShape();
@@ -106,75 +104,98 @@ function draw() {
   curveVertex((windowWidth/6)*3, windowHeight-32);
   curveVertex((windowWidth/6)*4, windowHeight-27);
   curveVertex((windowWidth/6)*5, windowHeight-41);
-  curveVertex((windowWidth/6)*6, windowHeight-61);
-  curveVertex((windowWidth/6)*6, windowHeight+60);
-  curveVertex((windowWidth/6)*6, windowHeight+200);
+  curveVertex(windowWidth, windowHeight-61);
+  curveVertex(windowWidth, windowHeight+60);
+  curveVertex(windowWidth, windowHeight+200);
   endShape();
-  pop();
-  strokeWeight(50);
-  noFill();
-  line((windowWidth/6)-200, 100, (windowWidth/6)+150, 50);
-  line((windowWidth/6)-20, 100, (windowWidth/6)+70, windowHeight-50);
-  strokeWeight(20);
-  curve(-200, 100, 0, 170, windowWidth/6, 150, (windowWidth/6)+50, 0);
-
-  ///////electric cable//////
-  points[0].wire();
-  for ( let j=0; j<arraySize ; j++){
-    points[j].path();
-  }
-  if (recording==1) {
-    points.push(new Electricity());
-    arraySize++; 
-  }
-
-  /////////Images and instructions//////////////////
-  push();
   noStroke();
   fill(255);
   rect((windowWidth/2)-100,(windowHeight/16*7)-35, 200, 45, 20);
-  fill(0);
-  text("Submit",windowWidth/2,(windowHeight/16*7));
   pop();
-  image(codeRef,(windowWidth/2)-200,windowHeight/2,400,400);
-  image(qrCode, windowWidth-50-200, windowHeight-50-200, 200, 200);
-  textSize(22);
-  textFont("georgia");
   textAlign(CENTER);
-  text("Use the QR code to join",windowWidth-50-100, windowHeight-300);
-  text("Write your one word answer to the prompt with the telegraph:",width/2,height/8);
   textSize(32);
   textFont(dotFont);
-  text(promptWord,width/2,height/6);
-  text(join(wordArray,""),width/2,height/8*3);
+}
+
+function draw() {
+  /////////////////////////////START PAGE////////////////////////////
+  if(slideState==0){
+    basicVisuals();
+    text("Start",windowWidth/2,(windowHeight/16*7));
+  }
+  ////////////////////////////GAME PAGE///////////////////////////////
+  else if(slideState==1){
+    basicVisuals();
+    ///////electric cable//////
+    strokeWeight(50);
+    noFill();
+    line((windowWidth/6)-200, 100, (windowWidth/6)+150, 50);
+    line((windowWidth/6)-20, 100, (windowWidth/6)+70, windowHeight-50);
+    strokeWeight(20);
+    curve(-200, 100, 0, 170, windowWidth/6, 150, (windowWidth/6)+50, 0);
+    points[0].wire();
+    for ( let j=0; j<arraySize ; j++){
+      points[j].path();
+    }
+    if (recording==1) {
+      points.push(new Electricity());
+      arraySize++; 
+    }
+    
+    //Images and instructions
+    fill(0);
+    text("Submit",windowWidth/2,(windowHeight/16*7));
+    image(codeRef,(windowWidth/2)-(((windowHeight/2)-20)/2),windowHeight/2,(windowHeight/2)-20,(windowHeight/2)-20);
+    image(qrCode, windowWidth-50-200, windowHeight-50-200, 200, 200);
+    push();
+    textSize(22);
+    textFont("georgia");
+    text("Use the QR code to join",windowWidth-50-100, windowHeight-300);
+    text("Write your one word answer to the prompt with the telegraph:",width/2,height/8);
+    pop();
+    text(promptWord,width/2,height/6);
+    text(join(wordArray,""),width/2,height/8*3);
     if(recording == true){
-        recordSymbol();
+      recordSymbol();
     }
     if(awaitingSymbol == true){ //check if the letter is complete by waiting
-        //fill(0,255,255);
-        //ellipse(width-(width/4), height-(height/4),25);
-        letterTimer++
-        if (letterTimer > 30){
-            identifyLetter = true;
-            awaitingSymbol = false;
-            background(130);
-            letterTimer = 0;
-            completeSymbol = join(symbolArray,"");
-            print(completeSymbol);
-        }
+      //fill(0,255,255);
+      //ellipse(width-(width/4), height-(height/4),25);
+      letterTimer++
+      if (letterTimer > 30){
+        identifyLetter = true;
+        awaitingSymbol = false;
+        background(130);
+        letterTimer = 0;
+        completeSymbol = join(symbolArray,"");
+        print(completeSymbol);
+      }
     }
     if(identifyLetter == true){
-        decodeLetter();
+      decodeLetter();
     }
-}
-function mousePressed(){
+  }
+  //////////////////////////GUESS PAGE////////////////////////////////
+  else if(slideState == 2){
+    basicVisuals();
+    text("Time to guess!",width/2,height/6);
+    text("Scores!",windowWidth/2,(windowHeight/16*7));
+  }
+  //////////////////////////SCORE PAGE////////////////////////////////
+  else if(slideState == 3){
+    basicVisuals();
+    text("Scores",width/2,height/6);
+    text("Restart",windowWidth/2,(windowHeight/16*7));
+  }
+  }
+  function keyPressed(){
     //beepSound.play();
     recording = true;
     awaitingSymbol = false;
     print("Recording!");
-}
-
-function mouseReleased(){
+  }
+  
+  function keyReleased(){
     //beepSound.stop();
     recording = false;
     letterTimer = 0;
@@ -191,14 +212,14 @@ function mouseReleased(){
     storedTime = 0;
     print(symbolArray);
     awaitingSymbol = true;
-
+}
+function mouseReleased(){
     /////////////Change slideState/////////
-    if(mouseX <=(windowWidth/2)+100 && mouseX >=(windowWidth/2)-100 && mouseY>=(windowHeight/16*7)-35 && mouseY<=(windowHeight/16*7)-35){ //If mouseX&mouseY are inside the button
-      //(windowWidth/2)-100,(windowHeight/16*7)-35, 200, 45
-      slideState++
-      print("slideState");
-      if(slideState>=2){
-
+    if(mouseX <=(windowWidth/2)+100 && mouseX >=(windowWidth/2)-100 && mouseY>=(windowHeight/16*7)-35 && mouseY<=(windowHeight/16*7)+35){
+      slideState++;
+      print("slideState"+slideState);
+      if(slideState>=4){
+          slideState = 1;
       }
     }
 }
@@ -231,7 +252,7 @@ function recordSymbol(){
 
 class Electricity{ //Live visual of electricity as the telegraph is being used
   constructor(){
-    this.beginX = windowWidth/6;  // Initial x-coordinate
+    this.beginX = windowWidth/8;  // Initial x-coordinate
     this.beginY = 150;  // Initial y-coordinate
     this.endX = windowWidth+100;   // Final x-coordinate
     this.endY = 250;   // Final y-coordinate
