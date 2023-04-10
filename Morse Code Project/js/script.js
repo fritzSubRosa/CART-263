@@ -305,7 +305,8 @@ class Player {
     console.log(wordArray);
     console.log(this.guessArray);
     for(let i=0;i<wordArray.length;i++){
-      if(wordArray[i] == guessArray[i]){
+      console.log("Scoring!")
+      if(wordArray[i] == this.guessArray[i]){
         console.log("correct!")
         this.correct++;
       }
@@ -316,6 +317,7 @@ class Player {
     }
     console.log("player scored!");
     console.log(allPlayers);
+    
   }
 }
 
