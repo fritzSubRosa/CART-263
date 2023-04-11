@@ -53,6 +53,7 @@ let qrCode;         //QR code image
 let morseCodeRef = "A || .- B || -... C || -.-. D || -.. E || .";
 let codeRef;       //Morse code reference image
 let dotFont;       //Special font made out of dots
+let xStart=0; //for the scrolling text in the start menu
 let beepSound;
 let bark;
 
@@ -121,12 +122,31 @@ function draw() {
   /////////////////////////////START PAGE////////////////////////////
   if(slideState==0){
     basicVisuals();
-    text("Start",windowWidth/2,(windowHeight/16*7));
+    push();
+    textFont("georgia");
+    text("tel·e·graph  (tĕl′ĭ-grăf′) n. ",windowWidth/2,(windowHeight/8))
+    textSize(22);
+    text("Join the game with your technologically advanced device",(windowWidth/2)-200,windowHeight*0.52, 400,400);
+    textAlign(LEFT);
+    text("1. A communications system that transmits and receives simple unmodulated electric impulses, especially one in which the transmission and reception stations are directly connected by wires.",windowWidth/4,windowHeight*0.15,windowWidth/2,800);
+    noStroke();
+    fill(255);
+    rect(0,windowHeight*0.3, width,42);
+    pop();
+    for (let x = xStart; x < width; x += 4000) { //use a for loop to draw the line of text multiple times
+      fill(0); 
+      text("-.- -. --- -.-. -.- / -.- -. --- -.-. -.- .-.-.- / .-- .... --- .----. ... / - .... . .-. . ..--.. / .-- --- --- -.. . -. / ... .... --- . .-.-.- / .-- --- --- -.. . -. / ... .... --- . --..-- / .-- .... --- ..--.. / .-- --- --- -.. . -. / ... .... --- . / .-.. .. -.- . / - --- / -.- -. --- .-- -.-.--", x,windowHeight*0.35); //display text
+    }
+    xStart--; //move the starting point of the loop up to create the scrolling animation, yStart-- is the same as yStart = yStart -1 or yStart-=1
+    
+    image(qrCode, (windowWidth/2)-100, windowHeight-50-200, 200, 200);
+    text("Start",windowWidth/2,windowHeight*0.44);
   }
   ////////////////////////////GAME PAGE///////////////////////////////
   else if(slideState==1){
     basicVisuals();
-    ///////electric cable//////
+
+    //electric cable
     strokeWeight(50);
     noFill();
     line((windowWidth/6)-200, 100, (windowWidth/6)+150, 50);
@@ -143,18 +163,20 @@ function draw() {
     }
     
     //Images and instructions
-    fill(0);
     text("Submit",windowWidth/2,(windowHeight/16*7));
     image(codeRef,(windowWidth/2)-(((windowHeight/2)-20)/2),windowHeight/2,(windowHeight/2)-20,(windowHeight/2)-20);
     image(qrCode, windowWidth-50-200, windowHeight-50-200, 200, 200);
     push();
     textSize(22);
     textFont("georgia");
-    text("Use the QR code to join",windowWidth-50-100, windowHeight-300);
-    text("Write your one word answer to the prompt with the telegraph:",width/2,height/8);
+    text("Use the QR code to join",windowWidth-50-100, windowHeight*0.57);
+    text("Write your one word answer to the prompt with the telegraph:",width*0.25,height/8,width/2,400);
     pop();
-    text(promptWord,width/2,height/6);
-    text(join(wordArray,""),width/2,height/8*3);
+    text(promptWord,width/2,height*0.2);
+    text(join(wordArray,""),width/2,height*0.3); //<------This needs to be invisible!
+
+
+    //Telegraph basic functions
     if(recording == true){
       recordSymbol();
     }
@@ -180,6 +202,9 @@ function draw() {
     basicVisuals();
     text("Time to guess!",width/2,height/6);
     text("Scores!",windowWidth/2,(windowHeight/16*7));
+
+    //Example from https://www.youtube.com/watch?v=4hA7G3gup-4 
+
   }
   //////////////////////////SCORE PAGE////////////////////////////////
   else if(slideState == 3){
@@ -252,9 +277,9 @@ function recordSymbol(){
 
 class Electricity{ //Live visual of electricity as the telegraph is being used
   constructor(){
-    this.beginX = windowWidth/8;  // Initial x-coordinate
+    this.beginX = windowWidth*0.125;  // Initial x-coordinate
     this.beginY = 150;  // Initial y-coordinate
-    this.endX = windowWidth+100;   // Final x-coordinate
+    this.endX = windowWidth*1.1;   // Final x-coordinate
     this.endY = 250;   // Final y-coordinate
     this.exponent = 0.3;   // Determines the curve
 
