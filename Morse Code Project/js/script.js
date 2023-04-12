@@ -47,33 +47,37 @@ let answerKey=["01","A","1000","B","1010","C","100","D","0","E","0010","F","110"
 
 ////////Visual and sounds////////
 let slideState =0;     //In which page (start/game/score) are we in.
-let points = [];    //array of points that represent the electric current
+let electricityPoints = [];    //array of points that represent the electric current
 let arraySize =0;   //Size of the points array
 let qrCode;         //QR code image
 let morseCodeRef = "A || .- B || -... C || -.-. D || -.. E || .";
 let codeRef;       //Morse code reference image
+var font;          //Georgia font (normal)
 let dotFont;       //Special font made out of dots
 let xStart=0; //for the scrolling text in the start menu
 let beepSound;
 let bark;
-
-function preload() {
-  codeRef = loadImage("assets/images/morsecode.png");
-  qrCode = loadImage("assets/images/qrcode.png");
-  dotFont = loadFont('assets/ordrededepart.ttf');
+var vehiclesArray = [];
+let limit = 0; //variable to limit the amount of time the text points are calculated
+  
+  function preload() {
+    codeRef = loadImage("assets/images/morsecode.png");
+    qrCode = loadImage("assets/images/qrcode.png");
+    font = loadFont("assets/Georgia.ttf")
+    dotFont = loadFont('assets/ordrededepart.ttf');
   //soundFormats('mp3', 'ogg');
   //bark=loadSound("assets/sounds/bark.wav");
   //beepSound = loadSound("assets/sounds/478946__skibkamusic__morse_code_radio_ss_hq.mp3");
 }
 
 function setup() {
-    createCanvas(windowWidth, windowHeight);
-    frameRate(30);
-    promptWord = promptArray[int(random(0,promptArray.length))];
-    print(promptWord);
-    MQTTsetup();
-    points.push(new Electricity());
-  }
+  createCanvas(windowWidth, windowHeight);
+  frameRate(30);
+  promptWord = promptArray[int(random(0,promptArray.length))];
+  print(promptWord);
+  MQTTsetup();
+  electricityPoints.push(new Electricity());
+}
 
 function basicVisuals(){ // Insert here everything we want to keep from one slide page to the other
   fill(0);
@@ -153,12 +157,12 @@ function draw() {
     line((windowWidth/6)-20, 100, (windowWidth/6)+70, windowHeight-50);
     strokeWeight(20);
     curve(-200, 100, 0, 170, windowWidth/6, 150, (windowWidth/6)+50, 0);
-    points[0].wire();
+    electricityPoints[0].wire();
     for ( let j=0; j<arraySize ; j++){
-      points[j].path();
+      electricityPoints[j].path();
     }
     if (recording==1) {
-      points.push(new Electricity());
+      electricityPoints.push(new Electricity());
       arraySize++; 
     }
     
@@ -174,8 +178,8 @@ function draw() {
     pop();
     text(promptWord,width/2,height*0.2);
     text(join(wordArray,""),width/2,height*0.3); //<------This needs to be invisible!
-
-
+    
+    
     //Telegraph basic functions
     if(recording == true){
       recordSymbol();
@@ -200,11 +204,28 @@ function draw() {
   //////////////////////////GUESS PAGE////////////////////////////////
   else if(slideState == 2){
     basicVisuals();
-    text("Time to guess!",width/2,height/6);
+    
+    //See vehicle.js
+    if(limit==0){ //defines where are the arrival coordonates of the textPoints, only one time.
+      textFont(font);
+      textAlign(CENTER);// WHY WONT THAT WORK??
+      var textPoints = font.textToPoints("Penis",width/3,height/3,180) //Creates a collection of point on the edge of each letter
+      for (var i=0; i<textPoints.length; i++){ //for each of those points, generates a x and y to be used later.
+        var pt = textPoints[i];
+        var vehicle = new Vehicle(pt.x,pt.y);
+        vehiclesArray.push(vehicle);
+      }
+      limit=1;
+    }
+    for(var i = 0; i< vehiclesArray.length; i++){
+      var v = vehiclesArray[i];
+      v.behavior();
+      v.update();
+      v.show();
+    }
+    
+    text("Time to guess!",width/2,height/8);
     text("Scores!",windowWidth/2,(windowHeight/16*7));
-
-    //Example from https://www.youtube.com/watch?v=4hA7G3gup-4 
-
   }
   //////////////////////////SCORE PAGE////////////////////////////////
   else if(slideState == 3){
