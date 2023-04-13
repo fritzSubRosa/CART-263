@@ -1,21 +1,19 @@
 "use strict";
 
 
-// Rube Goldberg setup, update with your own info!
-let myName = "Main"; // Who are you? Make sure it matches the previous person's variable! 
-let nextName = "Player"; // Who is next on the list? Make sure it matches the next person's variable!
-let dataToSend;  // Variable to hold the data to send to the next person on the list
-let message;
-let allPlayers = [];
+// MQTT setup
+let myName = "Main"; // Who is the message coming from?
+let nextName = "Player"; // Who is the message sent to?
+let message; 
+let allPlayers = []; //Array of players' usernames
 let newPlayer;
 
-// MQTT client details. We are using a public server called shiftr.io. Don't change this. 
+// MQTT client details. We are using a public server called shiftr.io.
 let broker = {
   hostname: 'public.cloud.shiftr.io',
   port: 443
 };
 let client;
-
 let creds = {
   clientID: Math.random().toString(16).slice(3), 
   userName: 'public', 
@@ -31,7 +29,7 @@ let letterTimer = 0;
 let symbolTimer = 0;
 let storedTime = 0;
 let completeSymbol;
-let recording = false; //I'LL use it too!! ^^ can we change it to mouseState?
+let recording = false;
 let awaitingSymbol = false;
 let identifyLetter = false;
 let symbolArray=[];
@@ -49,13 +47,11 @@ let slideState =0;     //In which page (start/game/score) are we in.
 let electricityPoints = [];    //array of points that represent the electric current
 let arraySize =0;   //Size of the points array
 let qrCode;         //QR code image
-let morseCodeRef = "A || .- B || -... C || -.-. D || -.. E || .";
 let codeRef;       //Morse code reference image
 var font;          //Georgia font (normal)
 let dotFont;       //Special font made out of dots
 let xStart=0; //for the scrolling text in the start menu
 let beepSound;
-let bark;
 var vehiclesArray = [];
 let limit = 0; //variable to limit the amount of time the text points are calculated
   
@@ -65,7 +61,6 @@ let limit = 0; //variable to limit the amount of time the text points are calcul
     font = loadFont("assets/Georgia.ttf")
     dotFont = loadFont('assets/ordrededepart.ttf');
     soundFormats('mp3', 'ogg');
-    bark=loadSound("assets/sounds/bark.wav");
     beepSound = loadSound("assets/sounds/478946__skibkamusic__morse_code_radio_ss_hq.mp3");
 }
 
@@ -117,7 +112,7 @@ function basicVisuals(){ // Insert here everything we want to keep from one slid
   rect((windowWidth/2)-100,(windowHeight/16*7)-35, 200, 45, 20);
   pop();
   textAlign(CENTER);
-  textSize(20);
+  textSize(32);
   textFont(dotFont);
 }
 
@@ -126,7 +121,6 @@ function draw() {
   if(slideState==0){
     basicVisuals();
     push();
-    textSize(24)
     textFont("georgia");
     text("tel·e·graph  (tĕl′ĭ-grăf′) n. ",windowWidth/2,(windowHeight/8))
     textSize(24);
@@ -144,7 +138,6 @@ function draw() {
     xStart--; //move the starting point of the loop up to create the scrolling animation, yStart-- is the same as yStart = yStart -1 or yStart-=1
     
     image(qrCode, (windowWidth/2)-100, windowHeight-50-200, 200, 200);
-    textSize(24);
     text("Start",windowWidth/2,windowHeight*0.44);
   }
   ////////////////////////////GAME PAGE///////////////////////////////
@@ -177,7 +170,7 @@ function draw() {
     text("Write your one word answer to the prompt with the telegraph:",width*0.25,height/8,width/2,400);
     pop();
     text(promptWord,width/2,height*0.2);
-    text(join(hiddenArray,""),width/2,height*0.3); //<------This needs to be invisible!
+    text(join(hiddenArray,""),width/2,height*0.25);
     
     
     //Telegraph basic functions
@@ -189,7 +182,6 @@ function draw() {
       if (letterTimer > 30){
         identifyLetter = true;
         awaitingSymbol = false;
-        background(130);
         letterTimer = 0;
         completeSymbol = join(symbolArray,"");
         print(completeSymbol);
@@ -366,11 +358,12 @@ class Player {
   }
 
   displayPlayer(){ // Creates a circle randomly on the screen with the player's guess. Bigger circles mean faster responses, lighter circles mean more correct.
+    fill(0);
+    textSize(20);
+    text(this.username,this.x,(this.y+(this.diameter*0.6)));
+    noStroke();
     fill(this.color); 
     ellipse(this.x,this.y,this.diameter);
-    fill(0);
-    textSize(40);
-    text(this.username,this.x,(this.y+300));
   }
 }
 

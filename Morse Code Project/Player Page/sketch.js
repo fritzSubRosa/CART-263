@@ -1,18 +1,5 @@
 /*
-Screen based Rube Goldberg machine template 
-CART253, Creative Computation, Fall 2022
-Concordia University
-l wilkins
-
-We are using the Eclipse Paho MQTT client library: https://www.eclipse.org/paho/clients/js/ to create an MQTT client that sends and receives messages. The client is set up for use on the shiftr.io test MQTT broker (https://shiftr.io/try)
-
-ACCESS HERE!!
-https://hybrid.concordia.ca/NO_CARR/Final_website/Morse%20Code%20Project/index.html 
-
-Example from:
-https://developer.mozilla.org/en-US/docs/Web/API/Navigator/vibrate 
-
-
+Morse Code Adventures: Player-Side 
 */
 
 
@@ -22,6 +9,8 @@ let myName = "Player"; // Who are you? Make sure it matches the previous person'
 let nextName = "Main"; // Who is next on the list? Make sure it matches the next person's variable!
 let dataToSend;  // Variable to hold the data to send to the next person on the list
 let timer = false;
+let timeElapsed = 0;
+let ticks = 0;
 let duration = 2;
 let endTime;
 let myInterval; 
@@ -45,93 +34,77 @@ let topic = 'MorseCode'; // This is the topic we are all subscribed to
 var username;
 var answer;
 
+function preload(){
+
+}
+
 
 function setup() {
   // Normal program setup goes here
-  createCanvas(540,960 );
-  background(50);
+  //createCanvas(440,660 );
+  //background(50);
   MQTTsetup(); // Setup the MQTT client
-  
+  document.getElementById("guessSection").style.display = "none"
+  document.getElementById("instructions").style.display="none";
+  document.getElementById("guessSubmit").style.display = "none";
+  console.log(topic);
 }
 
 
 function draw() {
-  
-}
-
-function testFunction(){
-  defineUsername();
-  
+  if (timer == true){
+    if (millis()>=1000+timeElapsed){ 
+        ticks++;
+        timeElapsed = millis();
+        console.log(ticks)
+    }
+    if(ticks > 30){
+      timer = false;
+    }
+  }
 }
 
 ////////////////////////////////////Text Box//////////////////////////////////
 function defineUsername() {
   username = document.getElementById("Name").value;
-  document.getElementById("Username").innerHTML = "Your name is "+username;
+  document.getElementById("Username").innerHTML = "Welcome, "+username+"!";
   document.getElementById("Name").style.display="none";
   document.getElementById("buttonName").style.display="none";
+  document.getElementById("instructions").style.display="block";
+  document.getElementById("guessSection").style.display = "block";
 }
 function submitAnswer() {
+  timer = false;
+  console.log(ticks);
   answer = document.getElementById("answer").value;
   document.getElementById("guess").innerHTML = "Your guess is "+answer;
+  sendMQTTMessage(username,answer,ticks); 
 }
 
-///////////////////////////////////////MQTT//////////////////////////////////////
-function mousePressed(){ 
-  // Sends a message on mouse pressed to test. You can use sendMQTTMessage(msg) at any time, it doesn't have to be on mouse pressed. 
-  sendMQTTMessage(username,answer); // This function takes 1 parameter, here I used a random number between 0 and 255 and constrained it to an integer. You can use anything you want.
-  background(random(255), 0, 50);
-}
 // When a message arrives, do this: 
 function onMessageArrived(message) {
-  let dataReceive = split(trim(message.payloadString), "/");// Split the incoming message into an array deliniated by "/"
-  console.log("Message Received:");
-  console.log(String(dataReceive[1])); 
-// 0 is who its from
-// 1 is who its for
-// 2 is the data
-  if(dataReceive[1] == nextName){ // Check if its for me////////////Change to myName!!!!////////////////////
-    console.log("Its for me! :) ");
-    console.log(dataReceive[2]);
-    console.log(dataReceive[3]);
-
-
-    //endTime = millis() + (duration*1000);
-     //timer = true;
-     //print("start timer");
-     //myInterval = setInterval(checkTimer);
-    //console.log(dataReceive[2]);
-  } else {
-    console.log("Not for me! :( ");
-  }
-  if(int(dataReceive[2]) == 0){ 
-    console.log("dot");
-  } else { 
-    console.log("dash");
+  let dataReceive = split(trim(message.payloadString), "/");
+  if(dataReceive[1] == myName){ 
+    if(dataReceive[2] == 2){
+      console.log("Start the clock!");
+      timer = true;
+      document.getElementById("guessSubmit").style.display = "block";
+    }
   }
 }
 
 // Sending a message
-function sendMQTTMessage(msg1, msg2) {
-      message = new Paho.MQTT.Message(myName + "/" + nextName+"/"+ msg1 +"/"+msg2); // add messages together: 
+function sendMQTTMessage(msg1, msg2,msg3) {
+      message = new Paho.MQTT.Message(myName + "/" + nextName+"/"+ msg1 +"/"+msg2+ "/" +msg3); // add messages together: 
 // My name + Next name + data separated by / 
+      topic ='MorseCode'
+      console.log(topic);
       message.destinationName = topic;
       console.log("Message Sent!");
       client.send(message);
 }
 
-function checkTimer(){
-if(millis() > endTime){
- print("ended");
- timer = false;
- clearInterval(myInterval);
- background(50);
- } else {
- background(255, 0, 0);
-}
 
-
-}
 // Callback functions
 function onConnect() {
   client.subscribe(topic);

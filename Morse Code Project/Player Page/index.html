@@ -7,14 +7,27 @@
     <meta charset="utf-8" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
     <script src="sketch.js"></script>
+    <!Font https://www.1001freefonts.com/ordre-de-depart.font>
+    <link href="//db.onlinewebfonts.com/c/4fb53becd76af10722da571dc7f5b093?family=Ordre+de+Depart" rel="stylesheet" type="text/css"/>
   </head>
   <body>
+    
+    <p id="Username"> Morse code Mini-game </p>
+    <p class="instructions">Thanks for joining! We will need one of you to use the telegraph... are you up for the challenge? </p>
     <input type="text" id="Name" value="Write your username here!">
     <button id="buttonName" onclick="defineUsername()">Submit</button>
-    <p id="Username"></p>
     
+    <div id="instructions">
+      <p class="instructions">Pay close attention to what the person is typing. 
+        As soon as they submit their answer to the prompt, you can guess what they wrote! You have as many tries as you want.
+        <br>PLEASE RIGHT YOUR GUESS IN ALL CAPS!
+      </p>
+    </div>
+    
+    <div id="guessSection">
     <input type="text" id="answer" value="Type your guess here">
-    <button onclick="submitAnswer()">Submit</button>
+    <button id="guessSubmit" onclick="submitAnswer()">Submit</button>
     <p id="guess"></p>
+    </div>
   </body>
 </html>

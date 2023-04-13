@@ -1,7 +1,43 @@
+@import url(//db.onlinewebfonts.com/c/4fb53becd76af10722da571dc7f5b093?family=Ordre+de+Depart);
+
+@font-face {font-family: "Ordre de Depart"; src: url("//db.onlinewebfonts.com/t/4fb53becd76af10722da571dc7f5b093.eot"); src: url("//db.onlinewebfonts.com/t/4fb53becd76af10722da571dc7f5b093.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/4fb53becd76af10722da571dc7f5b093.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/4fb53becd76af10722da571dc7f5b093.woff") format("woff"), url("//db.onlinewebfonts.com/t/4fb53becd76af10722da571dc7f5b093.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/4fb53becd76af10722da571dc7f5b093.svg#Ordre de Depart") format("svg"); }
+
 html, body {
-  margin: 0;
-  padding: 0;
+  background-color: #DCDCDC;
+  margin: 10px;
+  padding: 10px;
+  font-family: "Lucida Console";
 }
 canvas {
   display: block;
+}
+input{
+  border: none;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  font-size: 16px;
+  border-radius: 8px;
+  width: 100%;
+}
+button {
+  background-color: #696969;
+  border: none;
+  color: white;
+  padding: 12px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 8px;
+}
+p{
+  text-decoration: none;
+  font-size: 26px;
+  font-family: "Ordre de Depart";  
+}
+.instructions{
+  font-family: "Lucida Console";
+  padding: 20px 26px;
+  font-size: 16px;
 }
