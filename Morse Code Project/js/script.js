@@ -5,10 +5,6 @@
 let myName = "Main"; // Who are you? Make sure it matches the previous person's variable! 
 let nextName = "Player"; // Who is next on the list? Make sure it matches the next person's variable!
 let dataToSend;  // Variable to hold the data to send to the next person on the list
-//let timer = false;
-//let duration = 2;
-//let endTime;
-//let myInterval; 
 let message;
 let allPlayers = [];
 let newPlayer;
@@ -44,6 +40,8 @@ let wordArray=[];
 let promptArray=["rambunctious","modified","rapscallion","pungent","scullion","prancing","brouhaha","prank","parsed","marigold","oboeshoes","chronological","propagate","deity","analog","smelter","galvanize","hardwire","abscond","outwith","jaywalker","junebug","ellipse","diegesis","hypoxia","proforma","crampon","carabiner","shinguard","pentiment","palimpsest","supposed","interspersed","redoubt","citadel","pretension","illumine"];
 let promptWord;
 let answerKey=["01","A","1000","B","1010","C","100","D","0","E","0010","F","110","G","0000","H","00","I","0111","J","101","K","0100","L","11","M","10","N","111","O","0110","P","1101","Q","010","R","000","S","1","T","001","U","0001","V","011","W","1001,","X","1011","Y","1100","Z"];
+let answerWord;
+let timerStartTrigger = false;
 
 ////////Visual and sounds////////
 let slideState =0;     //In which page (start/game/score) are we in.
@@ -65,9 +63,9 @@ let limit = 0; //variable to limit the amount of time the text points are calcul
     qrCode = loadImage("assets/images/qrcode.png");
     font = loadFont("assets/Georgia.ttf")
     dotFont = loadFont('assets/ordrededepart.ttf');
-  //soundFormats('mp3', 'ogg');
-  //bark=loadSound("assets/sounds/bark.wav");
-  //beepSound = loadSound("assets/sounds/478946__skibkamusic__morse_code_radio_ss_hq.mp3");
+    soundFormats('mp3', 'ogg');
+    bark=loadSound("assets/sounds/bark.wav");
+    beepSound = loadSound("assets/sounds/478946__skibkamusic__morse_code_radio_ss_hq.mp3");
 }
 
 function setup() {
@@ -127,9 +125,10 @@ function draw() {
   if(slideState==0){
     basicVisuals();
     push();
+    textSize(64)
     textFont("georgia");
     text("tel·e·graph  (tĕl′ĭ-grăf′) n. ",windowWidth/2,(windowHeight/8))
-    textSize(22);
+    textSize(48);
     text("Join the game with your technologically advanced device",(windowWidth/2)-200,windowHeight*0.52, 400,400);
     textAlign(LEFT);
     text("1. A communications system that transmits and receives simple unmodulated electric impulses, especially one in which the transmission and reception stations are directly connected by wires.",windowWidth/4,windowHeight*0.15,windowWidth/2,800);
@@ -144,6 +143,7 @@ function draw() {
     xStart--; //move the starting point of the loop up to create the scrolling animation, yStart-- is the same as yStart = yStart -1 or yStart-=1
     
     image(qrCode, (windowWidth/2)-100, windowHeight-50-200, 200, 200);
+    textSize(48);
     text("Start",windowWidth/2,windowHeight*0.44);
   }
   ////////////////////////////GAME PAGE///////////////////////////////
@@ -171,7 +171,7 @@ function draw() {
     image(codeRef,(windowWidth/2)-(((windowHeight/2)-20)/2),windowHeight/2,(windowHeight/2)-20,(windowHeight/2)-20);
     image(qrCode, windowWidth-50-200, windowHeight-50-200, 200, 200);
     push();
-    textSize(22);
+    textSize(64);
     textFont("georgia");
     text("Use the QR code to join",windowWidth-50-100, windowHeight*0.57);
     text("Write your one word answer to the prompt with the telegraph:",width*0.25,height/8,width/2,400);
@@ -209,7 +209,7 @@ function draw() {
     if(limit==0){ //defines where are the arrival coordonates of the textPoints, only one time.
       textFont(font);
       textAlign(CENTER);// WHY WONT THAT WORK??
-      var textPoints = font.textToPoints("Penis",width/3,height/3,180) //Creates a collection of point on the edge of each letter
+      var textPoints = font.textToPoints(answerWord,width/3,height/3,180) //Creates a collection of point on the edge of each letter
       for (var i=0; i<textPoints.length; i++){ //for each of those points, generates a x and y to be used later.
         var pt = textPoints[i];
         var vehicle = new Vehicle(pt.x,pt.y);
@@ -226,12 +226,19 @@ function draw() {
     
     text("Time to guess!",width/2,height/8);
     text("Scores!",windowWidth/2,(windowHeight/16*7));
+    if(timerStartTrigger == false){
+      timerStartTrigger = true;
+      sendMQTTMessage(2);
+    }
   }
   //////////////////////////SCORE PAGE////////////////////////////////
   else if(slideState == 3){
     basicVisuals();
     text("Scores",width/2,height/6);
     text("Restart",windowWidth/2,(windowHeight/16*7));
+    for (let i=0; i<allPlayers.length;i++){
+      allPlayers[i].displayPlayer();
+    }
   }
   }
   function keyPressed(){
@@ -266,6 +273,7 @@ function mouseReleased(){
       print("slideState"+slideState);
       if(slideState>=4){
           slideState = 1;
+          allPlayers = [];
       }
     }
 }
@@ -275,6 +283,7 @@ function decodeLetter(){
         if(completeSymbol == answerKey[i]){
             append(wordArray,answerKey[i+1])
             print(join(wordArray,""));
+            answerWord = (join(wordArray,""));
         }
     }
     identifyLetter =  false;
@@ -336,14 +345,16 @@ class Electricity{ //Live visual of electricity as the telegraph is being used
 
 ///////////////////////Score//////////////////
 class Player {
-  constructor(username,guess,timer){
+  constructor(username,guess,time){
     this.username = username;
     this.guess = guess;
-    this.timer = timer;
+    this.time = time;
     this.correct = 0;
     this.incorrect = 0;
-    this.accuracy;
     this.guessArray = [];
+    this.percentCorrect = 0;
+    this.x = random((windowWidth/8),(windowWidth-(windowWidth/8)));
+    this.y = random((windowHeight/8),(windowHeight-(windowHeight/8)));
   }
 
   scoreMe(){
@@ -351,19 +362,25 @@ class Player {
     console.log(wordArray);
     console.log(this.guessArray);
     for(let i=0;i<wordArray.length;i++){
-      console.log("Scoring!")
       if(wordArray[i] == this.guessArray[i]){
-        console.log("correct!")
         this.correct++;
       }
       else{
-        console.log("incorrect!")
         this.incorrect++;
       }
     }
-    console.log("player scored!");
-    console.log(allPlayers);
-    
+    this.percentCorrect = int(100*((this.correct)/(this.correct+this.incorrect)));
+    this.diameterDifferential = map(this.time,0,30,0,200);
+    this.color = map(this.percentCorrect,0,100,0,255);
+    console.log(allPlayers);    
+  }
+
+  displayPlayer(){
+    fill(this.color);
+    ellipse(this.x,this.y,(300-this.diameterDifferential));
+    fill(0);
+    textSize(40);
+    text(this.username,this.x,(this.y+300));
   }
 }
 
