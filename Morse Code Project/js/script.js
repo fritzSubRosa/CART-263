@@ -37,7 +37,8 @@ let identifyLetter = false;
 let symbolArray=[];
 let letterArray=[];
 let wordArray=[];
-let promptArray=["rambunctious","modified","rapscallion","pungent","scullion","prancing","brouhaha","prank","parsed","marigold","oboeshoes","chronological","propagate","deity","analog","smelter","galvanize","hardwire","abscond","outwith","jaywalker","junebug","ellipse","diegesis","hypoxia","proforma","crampon","carabiner","shinguard","pentiment","palimpsest","supposed","interspersed","redoubt","citadel","pretension","illumine"];
+let hiddenArray=[];
+let promptArray=["Give yourself a nickname!","What's the last movie you watched?","What's your favorite color?","Where are you from?","What's the last name of your favorite author?","What's your favorite animal?"];
 let promptWord;
 let answerKey=["01","A","1000","B","1010","C","100","D","0","E","0010","F","110","G","0000","H","00","I","0111","J","101","K","0100","L","11","M","10","N","111","O","0110","P","1101","Q","010","R","000","S","1","T","001","U","0001","V","011","W","1001,","X","1011","Y","1100","Z"];
 let answerWord;
@@ -116,7 +117,7 @@ function basicVisuals(){ // Insert here everything we want to keep from one slid
   rect((windowWidth/2)-100,(windowHeight/16*7)-35, 200, 45, 20);
   pop();
   textAlign(CENTER);
-  textSize(32);
+  textSize(20);
   textFont(dotFont);
 }
 
@@ -125,10 +126,10 @@ function draw() {
   if(slideState==0){
     basicVisuals();
     push();
-    textSize(64)
+    textSize(24)
     textFont("georgia");
     text("tel·e·graph  (tĕl′ĭ-grăf′) n. ",windowWidth/2,(windowHeight/8))
-    textSize(48);
+    textSize(24);
     text("Join the game with your technologically advanced device",(windowWidth/2)-200,windowHeight*0.52, 400,400);
     textAlign(LEFT);
     text("1. A communications system that transmits and receives simple unmodulated electric impulses, especially one in which the transmission and reception stations are directly connected by wires.",windowWidth/4,windowHeight*0.15,windowWidth/2,800);
@@ -143,13 +144,12 @@ function draw() {
     xStart--; //move the starting point of the loop up to create the scrolling animation, yStart-- is the same as yStart = yStart -1 or yStart-=1
     
     image(qrCode, (windowWidth/2)-100, windowHeight-50-200, 200, 200);
-    textSize(48);
+    textSize(24);
     text("Start",windowWidth/2,windowHeight*0.44);
   }
   ////////////////////////////GAME PAGE///////////////////////////////
   else if(slideState==1){
     basicVisuals();
-
     //electric cable
     strokeWeight(50);
     noFill();
@@ -171,13 +171,13 @@ function draw() {
     image(codeRef,(windowWidth/2)-(((windowHeight/2)-20)/2),windowHeight/2,(windowHeight/2)-20,(windowHeight/2)-20);
     image(qrCode, windowWidth-50-200, windowHeight-50-200, 200, 200);
     push();
-    textSize(64);
+    textSize(24);
     textFont("georgia");
     text("Use the QR code to join",windowWidth-50-100, windowHeight*0.57);
     text("Write your one word answer to the prompt with the telegraph:",width*0.25,height/8,width/2,400);
     pop();
     text(promptWord,width/2,height*0.2);
-    text(join(wordArray,""),width/2,height*0.3); //<------This needs to be invisible!
+    text(join(hiddenArray,""),width/2,height*0.3); //<------This needs to be invisible!
     
     
     //Telegraph basic functions
@@ -185,8 +185,6 @@ function draw() {
       recordSymbol();
     }
     if(awaitingSymbol == true){ //check if the letter is complete by waiting
-      //fill(0,255,255);
-      //ellipse(width-(width/4), height-(height/4),25);
       letterTimer++
       if (letterTimer > 30){
         identifyLetter = true;
@@ -255,12 +253,12 @@ function draw() {
     storedTime = symbolTimer;
     symbolTimer = 0;
     if(storedTime > 15){
-        append(symbolArray, "1");
-        sendMQTTMessage(1);
+        append(symbolArray, "1"); // If the input was long, record a 1 (dash)
+        sendMQTTMessage(1); // Technically redundant, but the program does send a dash to the player
     }
     else {
-        append(symbolArray, "0");
-        sendMQTTMessage(0);
+        append(symbolArray, "0"); // If the input was short, record a 0 (dot)
+        sendMQTTMessage(0); // see line 257
     }
     storedTime = 0;
     print(symbolArray);
@@ -274,16 +272,18 @@ function mouseReleased(){
       if(slideState>=4){
           slideState = 1;
           allPlayers = [];
+          timerStartTrigger = false;
       }
     }
 }
 
 function decodeLetter(){
-    for(let i=0;i<answerKey.length;i=i+2){
-        if(completeSymbol == answerKey[i]){
-            append(wordArray,answerKey[i+1])
+    for(let i=0;i<answerKey.length;i=i+2){ // For every entry in the answer key...
+        if(completeSymbol == answerKey[i]){ // ...compare it to the symbol given...
+            append(wordArray,answerKey[i+1]) // ... if it matches, append the corresponding letter to the wordArray...
+            append(hiddenArray,"*"); // ... and generate a new asterisk to put on the screen.
             print(join(wordArray,""));
-            answerWord = (join(wordArray,""));
+            answerWord = (join(wordArray,"")); // Turn the word array into a single string, to use later
         }
     }
     identifyLetter =  false;
@@ -293,15 +293,8 @@ function decodeLetter(){
 function recordSymbol(){
     symbolTimer++;
     print("dot"); 
-    //background(130);
-    //fill(255);
-    //ellipse(width/2,height/2,100);
-    if(symbolTimer>15){
+    if(symbolTimer>15){ // If the button is held for a certain period, return a dash in log
       print("dash");
-        //background(130);
-        //fill(255);
-        //rectMode(CENTER);
-        //rect(width/2,height/2,400,100);
     }
 }
 
@@ -344,8 +337,8 @@ class Electricity{ //Live visual of electricity as the telegraph is being used
 }
 
 ///////////////////////Score//////////////////
-class Player {
-  constructor(username,guess,time){
+class Player { 
+  constructor(username,guess,time){ // Takes 3 things from the message received - the username, the player's guess, and their time
     this.username = username;
     this.guess = guess;
     this.time = time;
@@ -358,26 +351,23 @@ class Player {
   }
 
   scoreMe(){
-    this.guessArray = split(this.guess,"");
-    console.log(wordArray);
-    console.log(this.guessArray);
-    for(let i=0;i<wordArray.length;i++){
-      if(wordArray[i] == this.guessArray[i]){
-        this.correct++;
+    this.guessArray = split(this.guess,""); // Splits the player's guess into an array, with a letter in each index
+    for(let i=0;i<wordArray.length;i++){  // For each entry in the array containing the word to be decoded...
+      if(wordArray[i] == this.guessArray[i]){ //... compare the entry to the correspending index in the guess...
+        this.correct++; // If they match
       }
       else{
-        this.incorrect++;
+        this.incorrect++; // If they don't match
       }
     }
-    this.percentCorrect = int(100*((this.correct)/(this.correct+this.incorrect)));
-    this.diameterDifferential = map(this.time,0,30,0,200);
-    this.color = map(this.percentCorrect,0,100,0,255);
-    console.log(allPlayers);    
+    this.percentCorrect = int(100*((this.correct)/(this.correct+this.incorrect))); // Turn the number of correct/incorrect into a percentage
+    this.diameter = map(this.time,0,30,200,0); // Map time to complete to diameter, in reverse - higher times mean smaller diameters
+    this.color = map(this.percentCorrect,0,100,0,255); // Map correctness to color - the more correct an answer is, the whiter the circle will be
   }
 
-  displayPlayer(){
-    fill(this.color);
-    ellipse(this.x,this.y,(300-this.diameterDifferential));
+  displayPlayer(){ // Creates a circle randomly on the screen with the player's guess. Bigger circles mean faster responses, lighter circles mean more correct.
+    fill(this.color); 
+    ellipse(this.x,this.y,this.diameter);
     fill(0);
     textSize(40);
     text(this.username,this.x,(this.y+300));
