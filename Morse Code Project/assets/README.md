@@ -1,4 +1,3 @@
 # Assets folder
 
-The assets folder should contain all the non-code parts of your project. For now there are folders for image files and sound files. If you needed to use font files, for example, you would create another folder called `fonts` and put them in there.
- <!--Font https://www.1001freefonts.com/ordre-de-depart.font-->
+The royalty free font we used can be find here: https://www.1001freefonts.com/ordre-de-depart.font

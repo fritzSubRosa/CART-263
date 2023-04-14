@@ -23,12 +23,12 @@ let topic = 'MorseCode'; // This is the topic we are all subscribed to
 // End of MQTT client details 
 
 
-// dot is 0 dash is 1
+// Information for the translation of morse code.
 let imageRef;
 let letterTimer = 0;
 let symbolTimer = 0;
 let storedTime = 0;
-let completeSymbol;
+let completeSymbol;// dot is 0 dash is 1
 let recording = false;
 let awaitingSymbol = false;
 let identifyLetter = false;
@@ -60,8 +60,6 @@ let limit = 0; //variable to limit the amount of time the text points are calcul
     qrCode = loadImage("assets/images/qrcode.png");
     font = loadFont("assets/Georgia.ttf")
     dotFont = loadFont('assets/ordrededepart.ttf');
-    soundFormats('mp3', 'ogg');
-    beepSound = loadSound("assets/sounds/478946__skibkamusic__morse_code_radio_ss_hq.mp3");
 }
 
 function setup() {
@@ -131,12 +129,11 @@ function draw() {
     fill(255);
     rect(0,windowHeight*0.3, width,42);
     pop();
-    for (let x = xStart; x < width; x += 4000) { //use a for loop to draw the line of text multiple times
+    for (let x = xStart; x < width; x += 4000) { //use a for loop to draw the line of text and make it scroll
       fill(0); 
       text("-.- -. --- -.-. -.- / -.- -. --- -.-. -.- .-.-.- / .-- .... --- .----. ... / - .... . .-. . ..--.. / .-- --- --- -.. . -. / ... .... --- . .-.-.- / .-- --- --- -.. . -. / ... .... --- . --..-- / .-- .... --- ..--.. / .-- --- --- -.. . -. / ... .... --- . / .-.. .. -.- . / - --- / -.- -. --- .-- -.-.--", x,windowHeight*0.35); //display text
     }
-    xStart--; //move the starting point of the loop up to create the scrolling animation, yStart-- is the same as yStart = yStart -1 or yStart-=1
-    
+    xStart--; //move the starting point of the loop up to create the scrolling animation
     image(qrCode, (windowWidth/2)-100, windowHeight-50-200, 200, 200);
     text("Start",windowWidth/2,windowHeight*0.44);
   }
@@ -199,7 +196,7 @@ function draw() {
     if(limit==0){ //defines where are the arrival coordonates of the textPoints, only one time.
       textFont(font);
       textAlign(CENTER);// WHY WONT THAT WORK??
-      var textPoints = font.textToPoints(answerWord,width/3,height/3,180) //Creates a collection of point on the edge of each letter
+      var textPoints = font.textToPoints(answerWord,width/8,height/3,180) //Creates a collection of point on the edge of each letter
       for (var i=0; i<textPoints.length; i++){ //for each of those points, generates a x and y to be used later.
         var pt = textPoints[i];
         var vehicle = new Vehicle(pt.x,pt.y);
@@ -232,14 +229,12 @@ function draw() {
   }
   }
   function keyPressed(){
-    //beepSound.play();
     recording = true;
     awaitingSymbol = false;
     print("Recording!");
   }
   
   function keyReleased(){
-    //beepSound.stop();
     recording = false;
     letterTimer = 0;
     storedTime = symbolTimer;
