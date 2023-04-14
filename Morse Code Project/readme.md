@@ -7,7 +7,7 @@
 
 >## CART 263: Creative Computation 2 – Winter 2023
 >Playful interaction
->By Noémie Carrier & Steven Friedrich
+>By Noémie Carrier & Stephen Friedrich
 
 ![Starting Page](Capture d’écran 2023-04-13 230906.png)
 
